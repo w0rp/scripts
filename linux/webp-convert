@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# A script for automatically converting .jpg and .png images to
+# .webp, both lossy and lossless, with ImageMagick and inotify.
+
+# Copyright (c) 2014, w0rp.com
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+function webp_is_older() {
+    if [ ! -f "$1.webp" ]; then
+        return 0
+    fi
+
+    if [ "$1.webp" -ot "$1" ]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# We must export our functions so find can use them.
+export -f webp_is_older
+
+function convert_lossless() {
+    if webp_is_older "$1"; then
+        convert "$1" -quality 100 -define webp:lossless=true "$1.webp"
+    fi
+}
+
+export -f convert_lossless
+
+function convert_lossy() {
+    if webp_is_older "$1"; then
+        echo "converting"
+        convert "$1" -quality 99 "$1.webp"
+    fi
+}
+
+export -f convert_lossy
+
+function try_convert_to_webp() {
+    echo "$1"
+
+    # Convert PNGs and JPEGs.
+    # Ignore everything else.
+    if [[ $1 == *.png ]]; then
+        convert_lossless "$1"
+    elif [[ $1 == *.jpg ]]; then
+        convert_lossy "$1"
+    elif [[ $1 == *.jpeg ]]; then
+        convert_lossy "$1"
+    fi
+}
+
+export -f try_convert_to_webp
+
+function try_delete_webp() {
+    rm "$1.webp" &> /dev/null
+}
+
+export -f try_delete_webp
+
+# Run find in the background to create .webp files for anything up to this
+# point.
+find "$1" \( -name '*.png' -o -name '*.jpeg' -o -name '*.jpg' \) \
+    -exec bash -c 'try_convert_to_webp "$0"' {} \; &
+
+# Start watching for new images to convert to .webp, remove, etc.
+while read line; do
+    args=($line)
+    events="${args[0]}"
+    filename="${args[@]:1}"
+
+    if [ "$events" = 'CLOSE_WRITE,CLOSE' ]; then
+        # A file was modified, so convert it.
+        try_convert_to_webp "$filename"
+    elif [ "$events" = 'MOVED_TO' ]; then
+        # A file was moved in, so convert it.
+        try_convert_to_webp "$filename"
+    elif [ "$events" = 'MOVED_FROM' ]; then
+        # A file was moved away, so try to delete the .webp for it.
+        try_delete_webp "$filename"
+    elif [ "$events" = 'DELETE' ]; then
+        # A file was deleted, so try to delete the .webp for it.
+        try_delete_webp "$filename"
+    fi
+done < <(inotifywait -mqr -e delete -e moved_from -e moved_to -e close_write --format '%e %w%f' "$1")
+

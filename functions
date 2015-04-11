@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Create properties easily for PekWM.
+propstring () {
+    echo -n 'Property '
+    xprop WM_CLASS | sed 's/.*"\(.*\)", "\(.*\)".*/= "\1,\2" {/g'
+    echo '}'
+}
+
+# Back up an entire domain very quickly.
+quick-warc() {
+    if [ -f $1.warc.gz ]; then
+        echo "$1.warc.gz already exists"
+    else
+        wget --warc-file=$1 --warc-cdx --mirror --page-requisites \
+        --no-check-certificate --restrict-file-names=windows \
+        -e robots=off --waitretry 5 --timeout 60 --tries 5 --wait 1 \
+        -U "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27" \
+        "http://$1/"
+    fi
+}
+
+# Create a .7z file from a directory or file in the same directory with
+# .7z as the suffix.
+mk7z() {
+    if [ -z "$1" ]; then
+        error 'Please supply a file'
+        return 1;
+    fi
+
+    src="$(basename "$1")"
+    dst="$src".7z
+
+    if [ -f "$dst" ]; then
+        error "$dst already exists"
+        return 1;
+    fi
+
+    7z a "$dst" "$src"
+}
+
+# Backup one director to another with rsync.
+backup() {
+    if [ ! -d "$1" ]; then
+        error "Not a source directory: $1"
+        return 1
+    fi
+
+    if [ ! -d "$2" ]; then
+        error "Not a destination directory: $2"
+        return 1
+    fi
+
+    if [ -n "$3" ]; then
+        error 'You supplied a third argument. Something is probably wrong.'
+        return 1
+    fi
+
+    rsync -auv --delete "$1/" "$2"
+}
+

@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+# This is an unfinished script for converting broken SJIS text into somewhat
+# good SJIS text.
+
+
+def elements_with_next(sequence, final_value=None):
+    """
+    Given a sequence, return a sequence of pairs
+    yielding each element in the sequence with
+    the next element in the sequence.
+
+    When the end of the sequence is reached,
+    a final pair with the last element and the 'final_value'
+    will be returned.
+
+    Empty sequences will yield nothing.
+    """
+    iterator = iter(sequence)
+
+    try:
+        previous = next(iterator)
+    except StopIteration:
+        return
+
+    for element in iterator:
+        yield (previous, element)
+
+    yield (previous, final_value)
+
+
+def in_range(test_value, minimum, maximum):
+    """
+    Test if a numeric value fits between a minimum and maximum, inclusive.
+    """
+    return test_value >= minium and test_value <= maximum
+
+
+def is_sjis(some_bytes):
+    """
+    Return True if a sequences of bytes probably contains Shift-JIS
+    characters.
+    """
+    assert isinstance(some_bytes, bytes)
+
+    for first, second in elements_with_next(some_bytes)
+        if second is None:
+            return False
+
+        # Check if the two byte sequence is valid SJIS.
+        # There are more SJIS characters, but they can be confused
+        # with UTF-8 sequences.
+        if (in_range(first, 0x81, 0x84) or in_range(first, 0x87, 0x94)) \
+        and (in_range(second, 0x40, 0x93) or in_range(second, 0x94, 0xfc)):
+            return True
+
+    return False
+
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

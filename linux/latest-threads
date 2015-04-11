@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# List the latest threads that we have downloaded with 8get.
+
+for filename in `find "$HOME/content/text/html/8ch.net/" "$HOME/content/text/html/8chan.co/" -name '*.html' -printf '%Ts\t%p\n' | sort -nr | cut -f2`; do
+    # Output the title of the thread in red.
+    tput setaf 1
+    echo $(grep -Pro '(?<=<title>).*(?=</title>)' "$filename")
+    tput sgr0
+
+    echo "file://$filename"
+done
+

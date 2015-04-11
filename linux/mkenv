@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$1" ]; then
+    echo 'Usage: mkenv <dirname> [<python_interpreter>]' 1>&2
+    exit 1
+fi
+
+env_dir="$1"
+
+# Set the interpreter to use, defaulting to just 'python'
+if [ -n "$2" ]; then
+    python="$2"
+else
+    python='python'
+fi
+
+if [ ! -d ~/.pip-packages ]; then
+    mkdir ~/.pip-packages
+fi
+
+test -f "$env_dir"/bin/activate || virtualenv --no-site-packages -p "$python" "$env_dir"
+source "$env_dir"/bin/activate
+pip install --download-cache ~/.pip-packages -r requirements.txt
+

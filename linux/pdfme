@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# A script for generating a PDF from RST where rst2pdf is not available.
+
+if [ -z "$2" ]; then
+    echo 'Usage: pdfme <file.rst> <file.pdf>' 1>&2
+    exit 1
+fi
+
+mkdir -p /tmp/tex && rst2latex2 < "$1" | pdflatex -jobname=tmp -output-directory=/tmp/tex &> /dev/null && mv /tmp/tex/tmp.pdf "$2" && rm /tmp/tex/*
+

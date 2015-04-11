@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# A utility for quickly taking a screenshot in both lossy and lossless formats.
+
+root="$HOME/content/image/cap"
+basename_no_ext=$(date +%s%N)
+filename_png="$root/$basename_no_ext".png
+filename_jpg="$root/$basename_no_ext".jpg
+
+scrot "$filename_png" &&
+convert "$filename_png" -quality 95 "$filename_jpg" &&
+notify-send --expire-time=2000 'Screenshot Taken' "Saved to $filename_png"
+

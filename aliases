@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Aliases for typing git commands really quickly.
+alias gd='git diff --cached --color'
+alias gd_='git diff --color'
+alias st='git status'
+
+# Make GVim open files in a tab instead of a window.
+alias gvim='/usr/bin/gvim --remote-tab-silent'
+
