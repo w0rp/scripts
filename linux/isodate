@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Public domain
+#
+# A portable Unix script for getting the date in ISO 8601 format.
+# The seconds are a real number value with milliseconds.
+
+date -u "+%FT%T.%3NZ"
+

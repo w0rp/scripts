@@ -8,3 +8,6 @@ alias st='git status'
 # Make GVim open files in a tab instead of a window.
 alias gvim='/usr/bin/gvim --remote-tab-silent'
 
+# Make `..` do `cd ..`
+alias ..='cd ..'
+

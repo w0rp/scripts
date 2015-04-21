@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$2" ]; then
+    echo 'Usage: remove-matches-from-file <regex> <filename>' 1>&2
+    exit 1
+fi
+
+temp_file=`mktemp`
+grep --invert-match -P "$1" "$2" > "$temp_file"
+mv "$temp_file" "$2"
+

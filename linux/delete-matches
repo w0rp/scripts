@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [ -z "$2" ]; then
+    echo 'Usage: delete-matches <regex> [<filename> ...]' 1>&2
+    exit 1
+fi
+
+# Determine the flag to use for extended regex.
+if [ "$(echo 'a' | sed -r 's/(a)/b/')" != 'b' ]; then
+    # This is GNU sed, so use -r.
+    r='-r'
+else
+    # This is BSD sed, so use -E.
+    r='-E'
+fi
+
+function escape-slashes() {
+    echo $1 | sed $r 's/\\\//\//g' | sed $r 's/\//\\\//g'
+}
+
+# Check that the escaping function actually works.
+if [ "$(escape-slashes '\//\//')" != '\/\/\/\/' ]; then
+    echo 'escape-slashes produces the wrong output!'
+    exit 1
+fi
+
+regex="$(escape-slashes "$1")"
+
+# Invoke sed first on an empty string to test the expression.
+# sed will print information on the syntax errors
+echo '' | sed $r "s/$regex/d" > /dev/null
+
+if (( $? )); then
+    # There was a syntax error, so stop here.
+    exit 1
+
+find "${@:2}" -type f -exec sed $r "s/$regex/d" -i {} \;
+

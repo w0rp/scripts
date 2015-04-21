@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Enable Ctrl+V for pasting into the Gnome terminal
+gconftool-2 --type string --set /apps/gnome-terminal/keybindings/paste '<Ctrl>v'
+
+# Make Ctrl+Shift+C copy from terminals.
+gconftool-2 -s /apps/gnome-terminal/keybindings/copy -t str '<Ctrl><Shift>c'
+
