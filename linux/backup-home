@@ -50,7 +50,7 @@ for item in ${list[@]}; do
         fi
 
         echo "rsync: $item"
-        rsync -au --delete "$src/" "$dst"
+        rsync -rltzu --delete "$src/" "$dst"
     else
         echo ‘"$src"'‘ does not exist!' 1>&2
     fi
