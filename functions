@@ -24,7 +24,7 @@ quick-warc() {
 # .7z as the suffix.
 mk7z() {
     if [ -z "$1" ]; then
-        error 'Please supply a file'
+        echo 'Please supply a file' 1>&2
         return 1;
     fi
 
@@ -32,7 +32,7 @@ mk7z() {
     dst="$src".7z
 
     if [ -f "$dst" ]; then
-        error "$dst already exists"
+        echo "$dst already exists" 1>&2
         return 1;
     fi
 
@@ -41,18 +41,23 @@ mk7z() {
 
 # Backup one director to another with rsync.
 backup() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo 'Usage: backup <src> <dest>' 1>&2
+        return 1
+    fi
+
     if [ ! -d "$1" ]; then
-        error "Not a source directory: $1"
+        echo "Not a source directory: $1" 1>&2
         return 1
     fi
 
     if [ ! -d "$2" ]; then
-        error "Not a destination directory: $2"
+        echo "Not a destination directory: $2" 1>&2
         return 1
     fi
 
     if [ -n "$3" ]; then
-        error 'You supplied a third argument. Something is probably wrong.'
+        echo 'You supplied a third argument. Something is probably wrong.' 1>&2
         return 1
     fi
 
