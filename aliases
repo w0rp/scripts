@@ -4,6 +4,7 @@
 alias gd='git diff --cached --color'
 alias gd_='git diff --color'
 alias st='git status'
+alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-ref -q HEAD)'
 
 # Make GVim open files in a tab instead of a window.
 alias gvim='/usr/bin/gvim --remote-tab-silent'

@@ -28,11 +28,11 @@ regex="$(escape-slashes "$1")"
 
 # Invoke sed first on an empty string to test the expression.
 # sed will print information on the syntax errors
-echo '' | sed $r "s/$regex/d" > /dev/null
+echo '' | sed $r "/$regex/d" > /dev/null
 
 if (( $? )); then
     # There was a syntax error, so stop here.
     exit 1
+fi
 
-find "${@:2}" -type f -exec sed $r "s/$regex/d" -i {} \;
-
+find "${@:2}" -type f -exec sed $r "/$regex/d" -i {} \;

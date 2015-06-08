@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+# Walk up parent paths until we git the git directory.
+while [ ! -d  '.git/objects' ] || [ "$PWD" == / ]; do
+    cd ..
+done
+
+if [ ! -d  '.git/objects' ]; then
+    echo 'This is not a git repository directory.' 1>&2
+    exit 1
+fi
+
+# Open all of the unstaged files in GVim.
+gvim `git diff --name-only`
