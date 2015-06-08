@@ -13,4 +13,4 @@ if [ ! -d  '.git/objects' ]; then
 fi
 
 # Open all of the unstaged files in GVim.
-gvim `git diff --name-only`
+gvim --remote-tab-silent `git diff --name-only`
