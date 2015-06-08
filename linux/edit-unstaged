@@ -3,7 +3,7 @@
 set -e
 
 # Walk up parent paths until we git the git directory.
-while [ ! -d  '.git/objects' ] || [ "$PWD" == / ]; do
+while [ ! -d  '.git/objects' ] && [ "$PWD" != / ]; do
     cd ..
 done
 
