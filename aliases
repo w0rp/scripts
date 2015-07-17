@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Aliases for typing git commands really quickly.
-alias gd='git diff --cached --color'
-alias gd_='git diff --color'
+alias gd='git diff -M -D --cached --color'
+alias gd_='git diff -M -D --color'
 alias st='git status'
 alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-ref -q HEAD)'
 
