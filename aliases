@@ -6,6 +6,7 @@ alias gd_='git diff -M -D --color'
 alias ga='git add -u :/ && gd'
 alias st='git status'
 alias com='git commit -m'
+alias gco='git checkout'
 alias nopyc=$'find `git rev-parse --show-toplevel` -name \'*.pyc\' -not -path \'*/site-packages/*\' -delete'
 alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-ref -q HEAD)'
 
