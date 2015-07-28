@@ -10,6 +10,11 @@ alias gco='git checkout'
 alias nopyc=$'find `git rev-parse --show-toplevel` -name \'*.pyc\' -not -path \'*/site-packages/*\' -delete'
 alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-ref -q HEAD)'
 
+. ~/script/git-completion.bash
+
+# Use git checkout aliases for gco
+__git_complete gco _git_checkout
+
 # Make GVim open files in a tab instead of a window.
 alias gvim='/usr/bin/gvim --remote-tab-silent'
 
