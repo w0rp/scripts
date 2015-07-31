@@ -4,6 +4,7 @@
 alias gd='git diff -M -D --cached --color'
 alias gd_='git diff -M -D --color'
 alias ga='git add -u :/ && gd'
+alias gf='git fetch --all --prune'
 alias st='git status'
 alias com='git commit -m'
 alias gco='git checkout'
