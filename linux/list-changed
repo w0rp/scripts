@@ -12,5 +12,10 @@ if [ ! -d  '.git/objects' ]; then
     exit 1
 fi
 
-# Open all of the unstaged files in GVim.
-gvim --remote-tab-silent `git diff --name-only | uniq`
+function escape-slashes() {
+    echo $1 | sed -r 's/\\\//\//g' | sed -r 's/\//\\\//g'
+}
+
+git_root=`pwd`
+
+git diff --name-only "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"

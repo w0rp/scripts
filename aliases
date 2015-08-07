@@ -19,6 +19,9 @@ __git_complete gco _git_checkout
 # Make GVim open files in a tab instead of a window.
 alias gvim='/usr/bin/gvim --remote-tab-silent'
 
+# Add aliases for the OpenSSL commands I can never remember.
+alias check-cert='openssl x509 -text -noout -in'
+
 # Make `..` do `cd ..`
 alias ..='cd ..'
 
