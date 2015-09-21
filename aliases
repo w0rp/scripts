@@ -3,7 +3,8 @@
 # Aliases for typing git commands really quickly.
 alias gd='git diff -M -D --cached --color'
 alias gd_='git diff -M -D --color'
-alias ga='git add -u :/ && gd'
+alias ga='git add -A'
+alias justdoit='git add -A :/ && gd'
 alias gf='git fetch --all --prune'
 alias st='git status'
 alias com='git commit -m'
