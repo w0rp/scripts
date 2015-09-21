@@ -18,4 +18,8 @@ function escape-slashes() {
 
 git_root=`pwd`
 
-git diff --name-only "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
+if [ -z "$1" ]; then
+    git diff --name-only | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
+else
+    git diff --name-only "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
+fi
