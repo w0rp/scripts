@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Tell git who I am.
+git config --global user.name w0rp
+git config --global user.email devw0rp@gmail.com
+
+# Let git figure out branch names for push by default.
+git config --global push.default current
+
+# Make `git pull` use --rebase by default.
+git config --global branch.autosetuprebase always
