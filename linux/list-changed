@@ -13,7 +13,7 @@ if [ ! -d  '.git/objects' ]; then
 fi
 
 function escape-slashes() {
-    echo $1 | sed -r 's/\\\//\//g' | sed -r 's/\//\\\//g'
+    echo "$1" | sed -r 's/\\\//\//g' | sed -r 's/\//\\\//g'
 }
 
 git_root=`pwd`

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Aliases for typing git commands really quickly.
-alias gd='git diff -M -D --cached --color'
-alias gd_='git diff -M -D --color'
+alias gd='git diff -M -D --cached'
+alias gd_='git diff -M -D'
 alias ga='git add -A'
 alias justdoit='git add -A :/ && gd'
 alias gf='git fetch --all --prune'
