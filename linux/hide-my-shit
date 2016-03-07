@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+for profile in "$HOME/.mozilla/firefox"/*.default; do
+    sqlite3 "$profile/places.sqlite" "DELETE FROM moz_historyvisits;"
+    sqlite3 "$profile/formhistory.sqlite" "DELETE FROM moz_formhistory;"
+done
+
+rm -rf ~/.kde/share/apps/RecentDocuments
+rm -rf ~/.kde/share/apps/gwenview/recentfolders/
+rm -rf ~/.kde/share/apps/gwenview/recenturls/
+rm -rf ~/.kde/share/apps/okular/docdata/
+rm -rf ~/.macromedia
