@@ -9,3 +9,6 @@ git config --global push.default current
 
 # Make `git pull` use --rebase by default.
 git config --global branch.autosetuprebase always
+
+# Make git use "patience diff" by default for everything.
+git config --global diff.algorithm patience
