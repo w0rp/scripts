@@ -1,0 +1,83 @@
+#!/bin/bash -eu
+
+user=`whoami`
+rsync='rsync -rltzuv --info=flist0,stats0'
+
+service_exists() {
+    service --status-all 2> /dev/null | grep ' '"$1"'$' > /dev/null
+}
+
+
+while :; do
+    case $1 in
+    --delete)
+        rsync="$rsync --delete"
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+if [ -z "$1" ]; then
+    echo "Please provide a destination directory." 1>&2
+    exit 1
+fi
+
+dest_dir="$1"
+
+if [ ! -d "$dest_dir" ]; then
+    echo "$dest_dir does not exist!" 1>&2
+    exit 1
+fi
+
+# This script assumes these parts will take only 5 minutes at most,
+# so sudo won't time out.
+
+# rsync some parts of /etc/
+echo 'Backing up /etc/' 1>&2
+mkdir -p "$dest_dir/etc/"
+sudo $rsync \
+    --include='/ssh/sshd_config' \
+    --include='/apt/sources.list.d/' \
+    --include='/postgresql' \
+    --exclude='*' \
+    /etc/ "$dest_dir/etc/"
+
+# rsync some parts of /var/lib/
+echo 'Backing up /var/lib/' 1>&2
+mkdir -p "$dest_dir/var/lib/"
+sudo $rsync --delete \
+    --include='/postgresql/' \
+    --exclude='*' \
+    /var/lib/ "$dest_dir/var/lib/"
+
+# If Postgres is installed, rsync it again quickly while it's offline.
+if service_exists postgresql; then
+    echo 'Making final postgres backup' 1>&2
+    sudo service postgresql stop
+    sudo $rsync /var/lib/postgresql/ "$dest_dir/var/lib/postgresql/"
+    sudo service postgresql start
+fi
+
+# rsync the /home/ directory.
+echo 'Backing up /home/' 1>&2
+mkdir -p "$dest_dir/home/$user/"
+$rsync \
+    --exclude-from="$HOME/.rsync_excludes" \
+    --exclude='/.crontab' \
+    ~/ "$dest_dir/home/$user/"
+
+# Output the full list of packages installed through apt.
+apt-mark showmanual > "$dest_dir/apt-packages"
+# Output crontab to the destination directory.
+crontab -l > "$dest_dir/home/$user/.crontab"
