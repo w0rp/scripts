@@ -47,9 +47,16 @@ fi
 echo 'Backing up /etc/' 1>&2
 mkdir -p "$dest_dir/etc/"
 sudo $rsync \
+    --include='/' \
+    --include='/ssh/' \
     --include='/ssh/sshd_config' \
+    --include='/apt/' \
     --include='/apt/sources.list.d/' \
-    --include='/postgresql' \
+    --include='/apt/sources.list.d/*' \
+    --include='/samba/' \
+    --include='/samba/*' \
+    --include='/postgresql/' \
+    --include='/postgresql/**' \
     --exclude='*' \
     /etc/ "$dest_dir/etc/"
 
@@ -57,7 +64,9 @@ sudo $rsync \
 echo 'Backing up /var/lib/' 1>&2
 mkdir -p "$dest_dir/var/lib/"
 sudo $rsync --delete \
+    --include='/' \
     --include='/postgresql/' \
+    --include='/postgresql/**' \
     --exclude='*' \
     /var/lib/ "$dest_dir/var/lib/"
 
