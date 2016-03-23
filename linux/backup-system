@@ -83,8 +83,12 @@ backup_root_dirs() {
     fi
 }
 
+export rsync
+export dest_dir
+export user
+
 # Run the root backup commands as root with one sudo invocation.
-sudo bash -euc "user='$user'; dest_dir='$dest_dir'; rsync='$rsync'; $(declare -f service_exists); $(declare -f backup_root_dirs); backup_root_dirs"
+sudo --preserve-env bash -euc "$(declare -f service_exists); $(declare -f backup_root_dirs); backup_root_dirs"
 
 # rsync the /home/ directory.
 echo 'Backing up /home/' 1>&2
