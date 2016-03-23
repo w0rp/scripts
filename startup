@@ -6,3 +6,6 @@ gconftool-2 --type string --set /apps/gnome-terminal/keybindings/paste '<Ctrl>v'
 # Make Ctrl+Shift+C copy from terminals.
 gconftool-2 -s /apps/gnome-terminal/keybindings/copy -t str '<Ctrl><Shift>c'
 
+if command -v zeal > /dev/null; then
+    nohup zeal 2>&1 > /dev/null &
+fi
