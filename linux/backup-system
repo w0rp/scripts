@@ -1,14 +1,13 @@
 #!/bin/bash -eu
 
 user=`whoami`
-rsync='rsync -rltzuv --info=flist0,stats0'
+rsync="rsync -rltzuv --info=flist0,stats0 --chown=$user:$user"
 
 service_exists() {
     service --status-all 2> /dev/null | grep ' '"$1"'$' > /dev/null
 }
 
-
-while :; do
+while [ $# -ne 0 ]; do
     case $1 in
     --delete)
         rsync="$rsync --delete"
@@ -28,7 +27,7 @@ while :; do
     esac
 done
 
-if [ -z "$1" ]; then
+if [ $# -eq 0 ] || [ -z "$1" ]; then
     echo "Please provide a destination directory." 1>&2
     exit 1
 fi
@@ -40,43 +39,52 @@ if [ ! -d "$dest_dir" ]; then
     exit 1
 fi
 
-# This script assumes these parts will take only 5 minutes at most,
-# so sudo won't time out.
-
-# rsync some parts of /etc/
-echo 'Backing up /etc/' 1>&2
-mkdir -p "$dest_dir/etc/"
-sudo $rsync \
-    --include='/' \
-    --include='/ssh/' \
-    --include='/ssh/sshd_config' \
-    --include='/apt/' \
-    --include='/apt/sources.list.d/' \
-    --include='/apt/sources.list.d/*' \
-    --include='/samba/' \
-    --include='/samba/*' \
-    --include='/postgresql/' \
-    --include='/postgresql/**' \
-    --exclude='*' \
-    /etc/ "$dest_dir/etc/"
-
-# rsync some parts of /var/lib/
-echo 'Backing up /var/lib/' 1>&2
-mkdir -p "$dest_dir/var/lib/"
-sudo $rsync --delete \
-    --include='/' \
-    --include='/postgresql/' \
-    --include='/postgresql/**' \
-    --exclude='*' \
-    /var/lib/ "$dest_dir/var/lib/"
-
-# If Postgres is installed, rsync it again quickly while it's offline.
-if service_exists postgresql; then
-    echo 'Making final postgres backup' 1>&2
-    sudo service postgresql stop
-    sudo $rsync /var/lib/postgresql/ "$dest_dir/var/lib/postgresql/"
-    sudo service postgresql start
+if [ "$dest_dir" == '/' ]; then
+    echo "/ cannot be used as a destination directory!" 1>&2
+    exit 1
 fi
+
+backup_root_dirs() {
+    # rsync some parts of /etc/
+    echo 'Backing up /etc/' 1>&2
+    mkdir -p "$dest_dir/etc/"
+    chown $user:$user "$dest_dir/etc/"
+    $rsync \
+        --include='/' \
+        --include='/etc/' \
+        --include='/etc/ssh/' \
+        --include='/etc/ssh/sshd_config' \
+        --include='/etc/apt/' \
+        --include='/etc/apt/sources.list.d/' \
+        --include='/etc/apt/sources.list.d/*' \
+        --include='/etc/samba/' \
+        --include='/etc/samba/*' \
+        --include='/etc/postgresql/' \
+        --include='/etc/postgresql/**' \
+        --include='/var/' \
+        --include='/var/lib/' \
+        --include='/var/lib/postgresql/' \
+        --include='/var/lib/postgresql/**' \
+        --exclude='*' \
+        / "$dest_dir/"
+
+    # If Postgres is installed, rsync it again quickly while it's offline.
+    if service_exists postgresql; then
+        echo 'Making final postgres backup' 1>&2
+        service postgresql stop
+        $rsync \
+            --include='/var/' \
+            --include='/var/lib/' \
+            --include='/var/lib/postgresql/' \
+            --include='/var/lib/postgresql/**' \
+            --exclude='*' \
+        / "$dest_dir/"
+        service postgresql start
+    fi
+}
+
+# Run the root backup commands as root with one sudo invocation.
+sudo bash -euc "user='$user'; dest_dir='$dest_dir'; rsync='$rsync'; $(declare -f service_exists); $(declare -f backup_root_dirs); backup_root_dirs"
 
 # rsync the /home/ directory.
 echo 'Backing up /home/' 1>&2
