@@ -1,16 +1,18 @@
 #!/bin/bash -eu
 
-user=`whoami`
-rsync="rsync -rltzuv --info=flist0,stats0 --chown=$user:$user"
+user=$(whoami)
+rsync="rsync -rltzuv --info=flist0,stats0 --delete"
 
 service_exists() {
     service --status-all 2> /dev/null | grep ' '"$1"'$' > /dev/null
 }
 
+restore=0
+
 while [ $# -ne 0 ]; do
     case $1 in
-    --delete)
-        rsync="$rsync --delete"
+    --restore)
+        restore=1
         shift
     ;;
     --)
@@ -44,12 +46,26 @@ if [ "$dest_dir" == '/' ]; then
     exit 1
 fi
 
-backup_root_dirs() {
-    # rsync some parts of /etc/
-    echo 'Backing up /etc/' 1>&2
-    mkdir -p "$dest_dir/etc/"
-    chown $user:$user "$dest_dir/etc/"
-    $rsync \
+root_actions() {
+    if (( $restore )); then
+        local from_dir="$dest_dir"
+        local to_dir="/"
+    else
+        local from_dir="/"
+        local to_dir="$dest_dir"
+    fi
+
+    if (( $restore )); then
+        # Install rsync if needed when restoring files.
+        if ! command -v rsync; then
+            apt-get update
+            apt-get install -y rsync
+        fi
+    fi
+
+    # rsync some parts of /
+    echo 'Syncing /' 1>&2
+    $root_rsync \
         --include='/' \
         --include='/etc/' \
         --include='/etc/ssh/' \
@@ -61,44 +77,87 @@ backup_root_dirs() {
         --include='/etc/samba/*' \
         --include='/etc/postgresql/' \
         --include='/etc/postgresql/**' \
+        --include='/etc/network/' \
+        --include='/etc/network/interfaces' \
         --include='/var/' \
         --include='/var/lib/' \
         --include='/var/lib/postgresql/' \
         --include='/var/lib/postgresql/**' \
         --exclude='*' \
-        / "$dest_dir/"
+        "$from_dir" "$to_dir/"
 
     # If Postgres is installed, rsync it again quickly while it's offline.
     if service_exists postgresql; then
-        echo 'Making final postgres backup' 1>&2
+        echo 'Syncing postgres while it is offline' 1>&2
         service postgresql stop
-        $rsync \
+        $root_rsync \
             --include='/var/' \
             --include='/var/lib/' \
             --include='/var/lib/postgresql/' \
             --include='/var/lib/postgresql/**' \
             --exclude='*' \
-        / "$dest_dir/"
+        "$from_dir/" "$to_dir/"
         service postgresql start
+    fi
+
+    if (( $restore )); then
+        if service_exists ssh; then
+            # Restart SSH to apply new settings.
+            service ssh restart
+        fi
+
+        # Fix some certain file system modes.
+        chown -f 755 /etc/network
+        chown -f 644 /etc/network/interfaces
     fi
 }
 
-export rsync
+if (( $restore )); then
+    root_rsync="$rsync"
+else
+    root_rsync="$rsync --chown=$user:$user"
+fi
+
+export restore
+export root_rsync
 export dest_dir
 export user
 
 # Run the root backup commands as root with one sudo invocation.
-sudo --preserve-env bash -euc "$(declare -f service_exists); $(declare -f backup_root_dirs); backup_root_dirs"
+sudo --preserve-env bash -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
+
+if (( $restore )); then
+    from_home_dir="$dest_dir/home/$user/"
+    to_home_dir="$HOME"
+    home_rsync="$rsync --chown=$user:$user"
+else
+    from_home_dir="$HOME"
+    to_home_dir="$dest_dir/home/$user/"
+    home_rsync="$rsync"
+
+    mkdir -p "$to_home_dir"
+fi
 
 # rsync the /home/ directory.
-echo 'Backing up /home/' 1>&2
-mkdir -p "$dest_dir/home/$user/"
-$rsync \
-    --exclude-from="$HOME/.rsync_excludes" \
-    --exclude='/.crontab' \
-    ~/ "$dest_dir/home/$user/"
+echo 'Syncing /home/' 1>&2
+$home_rsync \
+    --exclude-from="$HOME/script/home_rsync_excludes" \
+    "$from_home_dir/" "$to_home_dir/"
 
-# Output the full list of packages installed through apt.
-apt-mark showmanual > "$dest_dir/apt-packages"
-# Output crontab to the destination directory.
-crontab -l > "$dest_dir/home/$user/.crontab"
+if (( $restore )); then
+    # Fix some user file modes.
+    chmod 700 ~/.ssh
+    chmod -f 644 ~/.ssh/authorized_keys
+
+    # Install the list of apt packages.
+    apt-get update
+    apt-get install -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
+
+    # Restore crontab
+    crontab "$dest_dir/home/$user/.crontab"
+else
+    # Output the full list of packages installed through apt.
+    apt-mark showmanual > "$dest_dir/apt-packages"
+    # Output crontab to the destination directory.
+    crontab -l > "$dest_dir/home/$user/.crontab"
+fi
