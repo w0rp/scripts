@@ -31,6 +31,9 @@ alias check-cert='openssl x509 -text -noout -in'
 alias udec='python3 -c "import sys, urllib.parse; print(urllib.parse.unquote_plus(\" \".join(sys.argv[1:])))"'
 alias uenc='python3 -c "import sys, urllib.parse; print(urllib.parse.quote_plus(\" \".join(sys.argv[1:])))"'
 
+# Brief stat output.
+alias bstat='stat --format="%n %U:%G %a" --'
+
 # Make `..` do `cd ..`
 alias ..='cd ..'
 

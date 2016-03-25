@@ -68,3 +68,5 @@
 /tabby
 Thumbs.db
 ui/.cache/
+Temporary Internet Files
+/.wine/*/users/*/Temp

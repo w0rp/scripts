@@ -83,6 +83,12 @@ root_actions() {
         --include='/var/lib/' \
         --include='/var/lib/postgresql/' \
         --include='/var/lib/postgresql/**' \
+        --include='/var/lib/couchdb/.*' \
+        --include='/var/lib/couchdb/.*/**' \
+        --include='/var/lib/rabbitmq/' \
+        --include='/var/lib/rabbitmq/**' \
+        --include='/var/lib/NetworkManager/' \
+        --include='/var/lib/NetworkManager/**' \
         --exclude='*' \
         "$from_dir" "$to_dir/"
 
@@ -100,15 +106,30 @@ root_actions() {
         service postgresql start
     fi
 
+    if service_exists couchdb; then
+        echo 'Syncing couchdb while it is offline' 1>&2
+        service couchdb stop
+        $root_rsync \
+            --include='/var/' \
+            --include='/var/lib/' \
+            --include='/var/lib/couchdb/' \
+            --include='/var/lib/couchdb/**' \
+            --exclude='*' \
+        "$from_dir/" "$to_dir/"
+        service couchdb start
+    fi
+
     if (( $restore )); then
         if service_exists ssh; then
             # Restart SSH to apply new settings.
             service ssh restart
         fi
 
-        # Fix some certain file system modes.
-        chown -f 755 /etc/network
-        chown -f 644 /etc/network/interfaces
+        echo 'Fixing some file stats...' 1>&2
+        chown -fRv couchdb:couchdb /var/lib/couchdb
+        chown -fRv postgres:postgres /var/lib/postgresql
+        chmod -f 755 /etc/network
+        chmod -f 644 /etc/network/interfaces
     fi
 }
 
@@ -145,19 +166,29 @@ $home_rsync \
     "$from_home_dir/" "$to_home_dir/"
 
 if (( $restore )); then
+    echo 'Fixing some file modes...' 1>&2
     # Fix some user file modes.
     chmod 700 ~/.ssh
     chmod -f 644 ~/.ssh/authorized_keys
+fi
 
+echo 'Syncing apt packages' 1>&2
+
+if (( $restore )); then
     # Install the list of apt packages.
     apt-get update
     apt-get install -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
-
-    # Restore crontab
-    crontab "$dest_dir/home/$user/.crontab"
 else
     # Output the full list of packages installed through apt.
     apt-mark showmanual > "$dest_dir/apt-packages"
+fi
+
+echo 'Syncing crontab' 1>&2
+
+if (( $restore )); then
+    # Restore crontab
+    crontab "$dest_dir/home/$user/.crontab"
+else
     # Output crontab to the destination directory.
     crontab -l > "$dest_dir/home/$user/.crontab"
 fi
