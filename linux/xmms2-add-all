@@ -1,0 +1,12 @@
+#!/bin/bash -eu
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo 'Please provide a directory!' 1>&2
+    exit 1
+fi
+
+~/script/linux/find-music "$1" | {
+    while read line; do
+        xmms2 add "$line"
+    done
+}

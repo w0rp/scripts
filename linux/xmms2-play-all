@@ -1,0 +1,13 @@
+#!/bin/bash -eu
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo 'Please provide a directory!' 1>&2
+    exit 1
+fi
+
+# Stop current music and clear all items.
+xmms2 stop
+xmms2 remove '*'
+# Add the items and hit play
+~/script/linux/xmms2-add-all "$1"
+xmms2 play

@@ -1,0 +1,21 @@
+#!/bin/bash -eu
+
+# A script for finding all music in a directory, and presenting it in a
+# natural-sorted order.
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo 'Please provide a directory!' 1>&2
+    exit 1
+fi
+
+find "$1" -type f \
+    \( \
+        -name '*.mp3' \
+        -o -name '*.m4a' \
+        -o -name '*.flac' \
+        -o -name '*.wav' \
+        -o -name '*.aac' \
+        -o -name '*.sid' \
+        -o -name '*.spc' \
+    \) \
+    | sort -V
