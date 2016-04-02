@@ -10,12 +10,12 @@ fi
 
 find "$1" -type f \
     \( \
-        -name '*.mp3' \
-        -o -name '*.m4a' \
-        -o -name '*.flac' \
-        -o -name '*.wav' \
-        -o -name '*.aac' \
-        -o -name '*.sid' \
-        -o -name '*.spc' \
+        -iname '*.mp3' \
+        -o -iname '*.m4a' \
+        -o -iname '*.flac' \
+        -o -iname '*.wav' \
+        -o -iname '*.aac' \
+        -o -iname '*.sid' \
+        -o -iname '*.spc' \
     \) \
     | sort -V
