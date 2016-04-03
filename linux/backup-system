@@ -98,6 +98,7 @@ root_actions() {
     $root_rsync \
         --include='/' \
         --include='/etc/' \
+        --include='/etc/hosts' \
         --include='/etc/ssh/' \
         --include='/etc/ssh/sshd_config' \
         --include='/etc/apt/' \
