@@ -58,7 +58,6 @@
 /.wine/*/users/*/Temp
 /.xsession-errors
 /Android
-/VirtualBox VMs/archiveteam-warrior-*
 /Zomboid
 /bin
 /content/outbox
