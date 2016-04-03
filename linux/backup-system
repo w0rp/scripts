@@ -2,6 +2,8 @@
 
 user=$(whoami)
 rsync="rsync -rltzuv --info=flist0,stats0 --delete"
+script_linux_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(dirname "$script_linux_dir")"
 
 service_exists() {
     service --status-all 2> /dev/null | grep ' '"$1"'$' > /dev/null
@@ -55,12 +57,36 @@ root_actions() {
         local to_dir="$dest_dir"
     fi
 
+    echo 'Syncing apt packages' 1>&2
+
     if (( $restore )); then
+    # rsync apt sources first, so we know where to install from.
+        $root_rsync \
+            --include='/' \
+            --include='/etc/' \
+            --include='/etc/apt/' \
+            --include='/etc/apt/sources.list.d/' \
+            --include='/etc/apt/sources.list.d/*' \
+            --exclude='*' \
+            "$from_dir/" "$to_dir/"
+
+        # Import all of the public keys we saved.
+        apt-key add "$dest_dir/apt-keys"
+
+        # Install the list of apt packages.
+        apt-get update
+        apt-get install --force-yes -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
+
         # Install rsync if needed when restoring files.
         if ! command -v rsync; then
-            apt-get update
             apt-get install -y rsync
         fi
+    else
+        # Output the full list of public keys for apt.
+        apt-key exportall > "$dest_dir/apt-keys"
+
+        # Output the full list of packages installed through apt.
+        apt-mark showmanual > "$dest_dir/apt-packages"
     fi
 
     # rsync some parts of /
@@ -75,49 +101,14 @@ root_actions() {
         --include='/etc/apt/sources.list.d/*' \
         --include='/etc/samba/' \
         --include='/etc/samba/*' \
-        --include='/etc/postgresql/' \
-        --include='/etc/postgresql/**' \
         --include='/etc/network/' \
         --include='/etc/network/interfaces' \
         --include='/var/' \
         --include='/var/lib/' \
-        --include='/var/lib/postgresql/' \
-        --include='/var/lib/postgresql/**' \
-        --include='/var/lib/couchdb/.*' \
-        --include='/var/lib/couchdb/.*/**' \
-        --include='/var/lib/rabbitmq/' \
-        --include='/var/lib/rabbitmq/**' \
         --include='/var/lib/NetworkManager/' \
         --include='/var/lib/NetworkManager/**' \
         --exclude='*' \
-        "$from_dir" "$to_dir/"
-
-    # If Postgres is installed, rsync it again quickly while it's offline.
-    if service_exists postgresql; then
-        echo 'Syncing postgres while it is offline' 1>&2
-        service postgresql stop
-        $root_rsync \
-            --include='/var/' \
-            --include='/var/lib/' \
-            --include='/var/lib/postgresql/' \
-            --include='/var/lib/postgresql/**' \
-            --exclude='*' \
         "$from_dir/" "$to_dir/"
-        service postgresql start
-    fi
-
-    if service_exists couchdb; then
-        echo 'Syncing couchdb while it is offline' 1>&2
-        service couchdb stop
-        $root_rsync \
-            --include='/var/' \
-            --include='/var/lib/' \
-            --include='/var/lib/couchdb/' \
-            --include='/var/lib/couchdb/**' \
-            --exclude='*' \
-        "$from_dir/" "$to_dir/"
-        service couchdb start
-    fi
 
     if (( $restore )); then
         if service_exists ssh; then
@@ -125,9 +116,6 @@ root_actions() {
             service ssh restart
         fi
 
-        echo 'Fixing some file stats...' 1>&2
-        chown -fRv couchdb:couchdb /var/lib/couchdb
-        chown -fRv postgres:postgres /var/lib/postgresql
         chmod -f 755 /etc/network
         chmod -f 644 /etc/network/interfaces
     fi
@@ -162,7 +150,7 @@ fi
 # rsync the /home/ directory.
 echo 'Syncing /home/' 1>&2
 $home_rsync \
-    --exclude-from="$HOME/script/home_rsync_excludes" \
+    --exclude-from="$script_dir/home_rsync_excludes" \
     "$from_home_dir/" "$to_home_dir/"
 
 if (( $restore )); then
@@ -170,17 +158,6 @@ if (( $restore )); then
     # Fix some user file modes.
     chmod 700 ~/.ssh
     chmod -f 644 ~/.ssh/authorized_keys
-fi
-
-echo 'Syncing apt packages' 1>&2
-
-if (( $restore )); then
-    # Install the list of apt packages.
-    apt-get update
-    apt-get install -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
-else
-    # Output the full list of packages installed through apt.
-    apt-mark showmanual > "$dest_dir/apt-packages"
 fi
 
 echo 'Syncing crontab' 1>&2

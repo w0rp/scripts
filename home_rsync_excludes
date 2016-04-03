@@ -28,7 +28,6 @@
 /.kde/share/apps/gwenview/recenturls/
 /.kde/share/apps/kfileplaces/bookmarks.xml*
 /.kde/share/apps/okular/docdata/
-/.local
 /.macromedia
 /.mozilla/firefox/*/SDThumbs/
 /.mozilla/firefox/*/SiteSecurityServiceState.txt
@@ -53,18 +52,14 @@
 /.steam/
 /.steampid
 /.thunderbird/
-/.vim/
 /.vimcrap
 /.viminfo
 /.warsow-*/
 /.xsession-errors
 /Android
-/Downloads
-/VirtualBox VMs
 /Zomboid
 /bin
 /content/outbox
-/git
 /tabby
 Thumbs.db
 ui/.cache/
