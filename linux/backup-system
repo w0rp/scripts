@@ -132,8 +132,8 @@ export root_rsync
 export dest_dir
 export user
 
-# Run the root backup commands as root with one sudo invocation.
-sudo --preserve-env bash -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
+# Run the root backup commands.
+su --shell /bin/bash -- -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
 
 if (( $restore )); then
     from_home_dir="$dest_dir/home/$user/"
