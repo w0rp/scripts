@@ -28,6 +28,9 @@
 /.kde/share/apps/gwenview/recenturls/
 /.kde/share/apps/kfileplaces/bookmarks.xml*
 /.kde/share/apps/okular/docdata/
+/.local/share/Steam/
+/.local/share/Trash/
+/.local/share/baloo/
 /.macromedia
 /.mozilla/firefox/*/SDThumbs/
 /.mozilla/firefox/*/SiteSecurityServiceState.txt
