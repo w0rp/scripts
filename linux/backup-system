@@ -99,6 +99,7 @@ root_actions() {
         --include='/' \
         --include='/etc/' \
         --include='/etc/hosts' \
+        --include='/etc/fuse.conf' \
         --include='/etc/ssh/' \
         --include='/etc/ssh/sshd_config' \
         --include='/etc/apt/' \
