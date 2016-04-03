@@ -10,6 +10,8 @@ alias amend='git commit --amend --no-edit'
 alias st='git status'
 alias com='git commit -m'
 alias gco='git checkout'
+# My custom command for deleting everything.
+alias gw='git-wipeout'
 alias nopyc=$'find `git rev-parse --show-toplevel` -name \'*.pyc\' -not -path \'*/site-packages/*\' -delete'
 alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-ref -q HEAD)'
 

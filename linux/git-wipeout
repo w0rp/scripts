@@ -1,0 +1,9 @@
+#!/bin/bash -eu
+
+read -p "Really delete all tracked and untracked changes? [y/N] " -r
+echo
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo 'Clearing everything...' 1>&2
+    git reset :/ && git checkout :/ && git clean -fd :/
+fi
