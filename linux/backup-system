@@ -70,12 +70,16 @@ root_actions() {
             --exclude='*' \
             "$from_dir/" "$to_dir/"
 
-        # Import all of the public keys we saved.
-        apt-key add "$dest_dir/apt-keys"
+        if [ -f "$dest_dir/apt-keys" ]; then
+            # Import all of the public keys we saved.
+            apt-key add "$dest_dir/apt-keys"
+        fi
 
-        # Install the list of apt packages.
-        apt-get update
-        apt-get install --force-yes -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
+        if [ -f "$dest_dir/apt-packages" ]; then
+            # Install the list of apt packages.
+            apt-get update
+            apt-get install --force-yes -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
+        fi
 
         # Install rsync if needed when restoring files.
         if ! command -v rsync; then
@@ -156,15 +160,17 @@ $home_rsync \
 if (( $restore )); then
     echo 'Fixing some file modes...' 1>&2
     # Fix some user file modes.
-    chmod 700 ~/.ssh
+    chmod -f 700 ~/.ssh
     chmod -f 644 ~/.ssh/authorized_keys
 fi
 
 echo 'Syncing crontab' 1>&2
 
 if (( $restore )); then
-    # Restore crontab
-    crontab "$dest_dir/home/$user/.crontab"
+    if [ -f "$dest_dir/home/$user/.crontab" ]; then
+        # Restore crontab
+        crontab "$dest_dir/home/$user/.crontab"
+    fi
 else
     # Output crontab to the destination directory.
     crontab -l > "$dest_dir/home/$user/.crontab"
