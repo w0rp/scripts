@@ -111,6 +111,7 @@ root_actions() {
         --include='/var/lib/' \
         --include='/var/lib/NetworkManager/' \
         --include='/var/lib/NetworkManager/**' \
+        --include='/content' \
         --exclude='*' \
         "$from_dir/" "$to_dir/"
 
