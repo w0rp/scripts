@@ -1,21 +1,25 @@
 #!/bin/bash -eu
 
-# A script for finding all music in a directory, and presenting it in a
-# natural-sorted order.
+# A script for finding all music in a list of files and directories,
+# and presenting it in a natural-sorted order.
 
-if [ $# -eq 0 ] || [ -z "$1" ]; then
-    echo 'Please provide a directory!' 1>&2
+if [ $# -eq 0 ]; then
+    echo 'Please provide at least one file or directory!' 1>&2
     exit 1
 fi
 
-find "$1" -type f \
-    \( \
-        -iname '*.mp3' \
-        -o -iname '*.m4a' \
-        -o -iname '*.flac' \
-        -o -iname '*.wav' \
-        -o -iname '*.aac' \
-        -o -iname '*.sid' \
-        -o -iname '*.spc' \
-    \) \
-    | sort -V
+for arg in "$@"; do readlink -f -- "$arg"; done | sort -V | {
+    while read filename; do
+        find "$filename" -type f \
+            \( \
+                -iname '*.mp3' \
+                -o -iname '*.m4a' \
+                -o -iname '*.flac' \
+                -o -iname '*.wav' \
+                -o -iname '*.aac' \
+                -o -iname '*.sid' \
+                -o -iname '*.spc' \
+            \) \
+            | sort -V
+    done
+}

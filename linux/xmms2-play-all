@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
-if [ $# -eq 0 ] || [ -z "$1" ] || [ ! -d "$1" ]; then
-    echo 'Please provide a directory!' 1>&2
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo 'Please provide at least one file or directory!' 1>&2
     exit 1
 fi
 
@@ -9,5 +9,5 @@ fi
 xmms2 stop
 xmms2 remove '*'
 # Add the items and hit play
-~/script/linux/xmms2-add-all "$1"
+~/script/linux/xmms2-add-all "$@"
 xmms2 play
