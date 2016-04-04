@@ -8,18 +8,20 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-for arg in "$@"; do readlink -f -- "$arg"; done | {
-    while read filename; do
-        find "$filename" -type f \
-            \( \
-                -iname '*.mp3' \
-                -o -iname '*.m4a' \
-                -o -iname '*.flac' \
-                -o -iname '*.wav' \
-                -o -iname '*.aac' \
-                -o -iname '*.sid' \
-                -o -iname '*.spc' \
-            \) \
-            | sort -V
-    done
-}
+files=()
+
+for arg in "$@"; do
+    files+=("$(readlink -f -- "$arg")")
+done
+
+find "${files[@]}" -type f \
+    \( \
+        -iname '*.mp3' \
+        -o -iname '*.m4a' \
+        -o -iname '*.flac' \
+        -o -iname '*.wav' \
+        -o -iname '*.aac' \
+        -o -iname '*.sid' \
+        -o -iname '*.spc' \
+    \) \
+    | sort -V
