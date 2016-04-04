@@ -2,6 +2,7 @@
 .*.png.*
 .directory
 .lock
+.sock
 .thumbnails
 .~lock*
 /.AndroidStudio*
