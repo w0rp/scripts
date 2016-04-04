@@ -3,6 +3,6 @@
 # Brief, but human readable, stat output.
 
 for filename in "$@"; do
-    size=$(numfmt --to=iec --suffix=B --format="%f" $(stat -c %s -- "$filename"))
-    stat --format="%U:%G:%a %n [$size]" -- "$filename"
+    size=$(numfmt --to=iec --suffix=B --format="%5f" $(stat -c %s -- "$filename"))
+    stat --format="%U:%G:%a  $size  %n" -- "$filename"
 done
