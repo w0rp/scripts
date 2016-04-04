@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-for arg in "$@"; do readlink -f -- "$arg"; done | sort -V | {
+for arg in "$@"; do readlink -f -- "$arg"; done | {
     while read filename; do
         find "$filename" -type f \
             \( \
