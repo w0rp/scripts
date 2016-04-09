@@ -1,0 +1,24 @@
+#!/bin/bash -eu
+
+# A script for raising a window with wmctrl by class name
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo 'Please provide a window class name!' 1>&2
+    exit 1
+fi
+
+expected_class="$1"
+
+wmctrl -l | cut -d ' ' -f 1 | {
+    while read id; do
+        # Use xprop to extract the window class
+        class=$(xprop -id "$id" | grep -Po '(?<=WM_CLASS\(STRING\) = ")[^"]+')
+
+        # Check if the class matches.
+        if [ "$class" = "$expected_class" ]; then
+            # Raise the window by the ID.
+            wmctrl -i -a "$id"
+            break
+        fi
+    done
+}

@@ -1,0 +1,12 @@
+#!/bin/bash -eu
+
+if [ $# -eq 0 ]; then
+    # If we have no files as arguments, then open a new tab and focus
+    # the window.
+    /usr/bin/gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
+        > /dev/null 2>&1|| /usr/bin/gvim
+    ~/script/linux/raise-by-class gvim
+else
+    # Open all of the listed files in GVim
+    /usr/bin/gvim --remote-tab-silent "$@"
+fi
