@@ -1,0 +1,12 @@
+#!/bin/bash -eu
+
+if [ $# -gt 0 ]; then
+    # If there is an argument, then search for it.
+    url="http://netflix.com/search/$(uenc "$@")"
+else
+    # Just open the regular URL
+    url='http://netflix.com/'
+fi
+
+background google-chrome --user-data-dir="$HOME/.config/google-chrome-netflix" \
+    --kiosk "$url"

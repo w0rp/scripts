@@ -29,10 +29,6 @@ alias gvim='~/script/linux/gvim'
 # Add aliases for the OpenSSL commands I can never remember.
 alias check-cert='openssl x509 -text -noout -in'
 
-# Add aliases for messing with strings.
-alias udec='python3 -c "import sys, urllib.parse; print(urllib.parse.unquote_plus(\" \".join(sys.argv[1:])))"'
-alias uenc='python3 -c "import sys, urllib.parse; print(urllib.parse.quote_plus(\" \".join(sys.argv[1:])))"'
-
 # Make `..` do `cd ..`
 alias ..='cd ..'
 
