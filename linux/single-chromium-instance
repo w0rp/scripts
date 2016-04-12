@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+# A script for raising or opening Chromium.
+
+~/script/linux/raise-by-class chromium-browser || chromium-browser
