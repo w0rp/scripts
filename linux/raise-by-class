@@ -18,7 +18,9 @@ wmctrl -l | cut -d ' ' -f 1 | {
         if [ "$class" = "$expected_class" ]; then
             # Raise the window by the ID.
             wmctrl -i -a "$id"
-            break
+            exit 0
         fi
     done
+
+    exit 1
 }
