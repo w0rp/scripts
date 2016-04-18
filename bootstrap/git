@@ -8,7 +8,7 @@ git config --global user.email devw0rp@gmail.com
 git config --global push.default current
 
 # Make `git pull` use --rebase by default.
-git config --global branch.autosetuprebase always
+git config --global pull.rebase true
 
 # Make git use "patience diff" by default for everything.
 git config --global diff.algorithm patience
