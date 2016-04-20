@@ -12,3 +12,6 @@ git config --global pull.rebase true
 
 # Make git use "patience diff" by default for everything.
 git config --global diff.algorithm patience
+
+# Make git use GVim for commit messages, etc.
+git config --global core.editor gvim
