@@ -1,6 +1,9 @@
 #!/bin/bash -eu
 
-if [ $# -eq 0 ]; then
+if ! [ -t 0 ]; then
+    # If we are piping lines into this script, then open them with gvim.
+    ~/script/linux/forward-lines /usr/bin/gvim --remote-tab-silent
+elif [ $# -eq 0 ]; then
     # If we have no files as arguments, then open a new tab and focus
     # the window.
     /usr/bin/gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \

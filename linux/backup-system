@@ -96,7 +96,7 @@ root_actions() {
         fi
 
         # Install rsync if needed when restoring files.
-        if ! command -v rsync; then
+        if ! command -v rsync > /dev/null; then
             apt-get install -y rsync
         fi
     fi

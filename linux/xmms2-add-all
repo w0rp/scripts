@@ -5,12 +5,4 @@ if [ $# -eq 0 ] || [ -z "$1" ]; then
     exit 1
 fi
 
-~/script/linux/find-music "$@" | {
-    files=()
-
-    while read line; do
-        files+=("$line")
-    done
-
-    xmms2 add "${files[@]}"
-}
+~/script/linux/find-music "$@" | ~/script/linux/forward-lines xmms2 add

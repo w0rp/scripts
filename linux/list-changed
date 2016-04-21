@@ -1,6 +1,26 @@
-#!/bin/bash
+#!/bin/bash -eu
 
-set -e
+cached=''
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    --cached)
+        cached='--cached'
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
 
 # Walk up parent paths until we git the git directory.
 while [ ! -d  '.git/objects' ] && [ "$PWD" != / ]; do
@@ -18,8 +38,8 @@ function escape-slashes() {
 
 git_root=`pwd`
 
-if [ -z "$1" ]; then
-    git diff --name-only | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
+if [ $# -ne 0 ]; then
+    git diff --name-only $cached "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
 else
-    git diff --name-only "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
+    git diff --name-only $cached | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
 fi
