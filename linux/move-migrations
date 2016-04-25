@@ -1,0 +1,93 @@
+#!/bin/bash -eu
+
+# A script for moving Django migrations files around, from another git branch.
+#
+# Given a branch name and an app name, this script will figure out which
+# migration files have been added, and re-arrange the migration files
+# so they come after migration files added in the other branch.
+
+if ! [ $# -eq 2 ] || [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: move-migrations <from_branch> <app_name>" 1>&2
+    exit 1
+fi
+
+# Set up and validate the arguments.
+branch_name="$1"
+app_name="$2"
+
+if ! [[ "$app_name" =~ '^[a-zA-Z][a-zA-Z_0-9]*$' ]]; then
+    echo "Invalid app name: $app_name" 1>&2
+    exit 1
+fi
+
+if ! git rev-parse --verify "$branch_name" > /dev/null; then
+    echo "Invalid branch name: $branch_name" 1>&2
+    exit 1
+fi
+
+cd "$app_name/migrations"
+
+# A command for finding migrations added in this branch
+added_migrations="git diff --name-only --diff-filter=A --relative $branch_name --"
+
+# A function for finding the last migration file.
+find_last_migration() {
+    local last_filename
+
+    local last_file_found=0
+
+    for last_filename in $(/bin/ls -1 --reverse); do
+        if ! [[ "$last_filename" == *.py ]]; then
+            # Skip files which aren't Python files.
+            continue
+        fi
+
+        if [ "$last_filename" == '__init__.py' ]; then
+            # Skip __init__.py
+            continue
+        fi
+
+        if ! [[ $($added_migrations "$last_filename") ]]; then
+            last_file_found=1
+            break
+        fi
+    done
+
+    if ! [ $last_file_found -eq 1 ]; then
+        echo "Failed to find the last migration file! Stopping here." 1>&2
+        exit 1
+    fi
+
+    echo "$last_filename"
+}
+
+# Try to find the last migration straight away, so we can fail early.
+find_last_migration > /dev/null
+
+for filename in $($added_migrations .); do
+    echo "Moving migration $filename" 1>&2
+
+    # Extract the number and the suffix.
+    migration_number=$(echo "$filename" | grep -o '^[0-9]\+')
+    migration_suffix=$(echo "$filename" | sed 's/^[0-9]\+//')
+
+    # Increment it.
+    migration_number=$(printf '%04d' $(expr $migration_number + 1))
+
+    # Build the new filename.
+    new_filename="$migration_number$migration_suffix"
+
+    end_filename=$(find_last_migration)
+    end_migration_name="${end_filename::-3}"
+
+    # Move the migration forward now.
+    mv "$filename" "$new_filename"
+    # Fix the dependencies.
+    sed -i "s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
+done
+
+# Now add all of the changes.
+git add -A .
+
+echo 'Migrations moved. Check git diff --cached.'
+echo 'Commit the changes if you are happy with them.'
