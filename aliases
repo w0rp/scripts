@@ -27,6 +27,7 @@ alias github-branch-url=$'echo "$(github-url)/tree/$(git rev-parse --abbrev-ref 
 
 # Use git checkout aliases for gco
 __git_complete gco _git_checkout
+__git_complete make-pr _git_checkout
 
 # Make GVim open files in a tab instead of a window.
 alias gvim='~/script/linux/gvim'

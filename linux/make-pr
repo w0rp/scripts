@@ -1,0 +1,27 @@
+#!/bin/bash -eu
+
+# This script opens a tab in the default browser for creating a pull
+# request on GitHub.
+#
+# A branch name can be given, which will default to 'dev'.
+#
+# The path for the pull request will be taken from the remote named 'upstream'
+# If such a remote is not defined, the remote named 'origin' will be used
+# instead.
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    # Default to a branch named 'dev'
+    branch_name="dev"
+else
+    # Take whatever branch name was given.
+    branch_name="$1"
+fi
+
+# Determine the username from the git config.
+username="$(git config user.name)"
+# Determine the path on GitHub from the remote URLs.
+repo_path="$((git config --get remote.upstream.url || git config --get remote.origin.url) | grep -Po '(?<=github.com:)[^\.]+')"
+# Get the current branch from git.
+mybranch="$(git rev-parse --abbrev-ref HEAD)"
+
+xdg-open "https://github.com/$repo_path/compare/$branch_name...$username:$mybranch?expand=1" > /dev/null
