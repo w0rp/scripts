@@ -15,7 +15,7 @@ fi
 branch_name="$1"
 app_name="$2"
 
-if ! [[ "$app_name" =~ '^[a-zA-Z][a-zA-Z_0-9]*$' ]]; then
+if [[ ! "$app_name" =~ ^[a-zA-Z][a-zA-Z_0-9]*$ ]]; then
     echo "Invalid app name: $app_name" 1>&2
     exit 1
 fi
@@ -82,8 +82,15 @@ for filename in $($added_migrations .); do
 
     # Move the migration forward now.
     mv "$filename" "$new_filename"
+
+    # Find where the dependency lines start and end, to limit sed to
+    # editing only those lines.
+    start_line=$(grep -n 'dependencies *=' "$new_filename" | head -1 | cut -d : -f 1)
+    end_offset=$(tail -n "+$start_line" "$new_filename" | grep -n '\]' | head -1 | cut -d : -f 1)
+    end_line=$(expr $start_line + $end_offset)
+
     # Fix the dependencies.
-    sed -i "s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
+    sed -i "${start_line},${end_line}s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
 done
 
 # Now add all of the changes.
