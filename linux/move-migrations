@@ -67,8 +67,11 @@ find_last_migration > /dev/null
 for filename in $($added_migrations .); do
     echo "Moving migration $filename" 1>&2
 
+    end_filename=$(find_last_migration)
+    end_migration_name="${end_filename::-3}"
+
     # Extract the number and the suffix.
-    migration_number=$(echo "$filename" | grep -o '^[0-9]\+')
+    migration_number=$(echo "$end_filename" | grep -o '^[0-9]\+')
     migration_suffix=$(echo "$filename" | sed 's/^[0-9]\+//')
 
     # Increment it.
@@ -76,9 +79,6 @@ for filename in $($added_migrations .); do
 
     # Build the new filename.
     new_filename="$migration_number$migration_suffix"
-
-    end_filename=$(find_last_migration)
-    end_migration_name="${end_filename::-3}"
 
     # Move the migration forward now.
     mv "$filename" "$new_filename"
