@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 # Create properties easily for PekWM.
 propstring () {
@@ -88,3 +88,9 @@ transcode_for_youtube_720p_128k() {
     "$out_filename"
 }
 
+get_adfs_xml_url() {
+    domain=$(echo "$1" | sed -e 's/^\([a-zA-Z0-9]\+:\/\/\|\)\([^\/]\+\).*/\2/')
+    url="https://$domain/FederationMetadata/2007-06/FederationMetadata.xml"
+
+    wget --no-check-certificate "$url" -O "${domain}-metadata.xml"
+}
