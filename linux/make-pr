@@ -17,11 +17,25 @@ else
     branch_name="$1"
 fi
 
-# Determine the username from the git config.
-username="$(git config user.name)"
-# Determine the path on GitHub from the remote URLs.
-repo_path="$((git config --get remote.upstream.url || git config --get remote.origin.url) | grep -Po '(?<=github.com:)[^\.]+')"
-# Get the current branch from git.
-mybranch="$(git rev-parse --abbrev-ref HEAD)"
+if git config --get remote.upstream.url > /dev/null; then
+    upstream='upstream'
+elif git config --get remote.origin.url > /dev/null; then
+    upstream='origin'
+fi
 
-xdg-open "https://github.com/$repo_path/compare/$branch_name...$username:$mybranch?expand=1" > /dev/null
+# Determine the path on GitHub from the remote URLs.
+repo_path="$(git config --get remote."$upstream".url | grep -Po '(?<=github.com:)[^\.]+')"
+
+my_branch="$(git rev-parse --abbrev-ref HEAD)"
+tracking_branch="$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))"
+
+if [ "$tracking_branch" == "$upstream/$my_branch" ]; then
+    from="$my_branch"
+else
+    # Determine the username from the git config.
+    username="$(git config user.name)"
+
+    from="$username:$my_branch"
+fi
+
+xdg-open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
