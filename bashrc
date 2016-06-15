@@ -4,6 +4,7 @@
 
 . ~/script/aliases
 . ~/script/functions
+. ~/script/git-completion.bash
 
 PS1='\W$ '
 
@@ -21,3 +22,5 @@ source ~/script/completion/dub-completion.bash
 # Stop Ctrl+D from closing the terminal.
 set -o ignoreeof
 
+# Use git branch completion for move-migrations
+__git_complete move-migrations _git_checkout
