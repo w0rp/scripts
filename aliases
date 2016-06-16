@@ -41,3 +41,5 @@ alias ..='cd ..'
 # Add an alias for re-running hourly cron jobs.
 alias rerun-hourly='crontab -l | grep ^@hourly | cut -f 2- -d " " | while read command; do eval $command; done'
 
+# An alias for loading a missing apt key, using the Ubuntu key server.
+alias load-apt-key='sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys'
