@@ -65,8 +65,6 @@ find_last_migration() {
 find_last_migration > /dev/null
 
 for filename in $($added_migrations .); do
-    echo "Moving migration $filename" 1>&2
-
     end_filename=$(find_last_migration)
     end_migration_name="${end_filename::-3}"
 
@@ -79,6 +77,13 @@ for filename in $($added_migrations .); do
 
     # Build the new filename.
     new_filename="$migration_number$migration_suffix"
+
+    if [ "$filename" == "$new_filename" ]; then
+        echo 'There is nothing to move.' 1>&2
+        exit 0
+    fi
+
+    echo "Moving migration $filename" 1>&2
 
     # Move the migration forward now.
     mv "$filename" "$new_filename"
