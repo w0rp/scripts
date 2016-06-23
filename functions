@@ -88,7 +88,13 @@ transcode_for_youtube_720p_128k() {
     "$out_filename"
 }
 
-get_adfs_xml_url() {
+adfs_xml_url() {
+    domain=$(echo "$1" | sed -e 's/^\([a-zA-Z0-9]\+:\/\/\|\)\([^\/]\+\).*/\2/')
+
+    echo "https://$domain/FederationMetadata/2007-06/FederationMetadata.xml"
+}
+
+download_adfs_xml() {
     domain=$(echo "$1" | sed -e 's/^\([a-zA-Z0-9]\+:\/\/\|\)\([^\/]\+\).*/\2/')
     url="https://$domain/FederationMetadata/2007-06/FederationMetadata.xml"
 
