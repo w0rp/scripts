@@ -21,6 +21,6 @@ cd ~/content/text/html/
 
 wget --recursive --level=1 --timestamping --convert-links \
     --reject '*.php,robots.txt,boards.html,bans.html,faq.html,index.html,catalog.html' \
-    --domains=8ch.net --span-hosts -e robots=off \
+    --domains=8ch.net,media2.8ch.net --span-hosts -e robots=off \
     "$1"
 
