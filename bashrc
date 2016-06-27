@@ -22,5 +22,9 @@ source ~/script/completion/dub-completion.bash
 # Stop Ctrl+D from closing the terminal.
 set -o ignoreeof
 
+# Make history ten times as large as it is by default.
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
