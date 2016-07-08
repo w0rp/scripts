@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -e
+#!/bin/bash -eu
 
 for profile in "$HOME/.mozilla/firefox"/*.default; do
     sqlite3 "$profile/places.sqlite" "DELETE FROM moz_historyvisits;"
@@ -12,3 +10,16 @@ rm -rf ~/.kde/share/apps/gwenview/recentfolders/
 rm -rf ~/.kde/share/apps/gwenview/recenturls/
 rm -rf ~/.kde/share/apps/okular/docdata/
 rm -rf ~/.macromedia
+
+killall chrome -q -9 || true
+
+# Delete Google Chrome Files
+rm -f ~/.config/google-chrome/Default/History
+rm -f ~/.config/google-chrome/Default/History-journal
+rm -f ~/.config/google-chrome/Default/Last\ Tabs
+rm -f ~/.config/google-chrome/Default/Visited\ Links
+rm -f ~/.config/google-chrome/Default/History\ Provider\ Cache
+rm -f ~/.config/google-chrome/Default/Shortcuts
+rm -f ~/.config/google-chrome/Default/Last\ Session
+rm -f ~/.config/google-chrome/Default/Sync Data/SyncData.sqlite3
+rm -rf ~/.cache/google-chrome/Default
