@@ -11,6 +11,11 @@ rm -rf ~/.kde/share/apps/gwenview/recenturls/
 rm -rf ~/.kde/share/apps/okular/docdata/
 rm -rf ~/.macromedia
 
+if [ -f ~/.kde/share/config/dragonplayerrc ]; then
+    # Remove recent files from Dragon Player
+    sed '/^Recent Urls/d' -i ~/.kde/share/config/dragonplayerrc
+fi
+
 killall chrome -q -9 || true
 
 # Delete Google Chrome Files
