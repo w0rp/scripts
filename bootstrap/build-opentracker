@@ -1,0 +1,66 @@
+#!/bin/bash -eu
+
+# Given a destination filename, this script will build a fresh copy of
+# opentracker for any Debian-based machine, so long as there is an Internet
+# connection.
+#
+# sudo will be used to install required installation dependencies if needed.
+# If sudo cannot be used on the machine in question, the script should work
+# if they have already been installed.
+
+requires() {
+    for package in "$@"; do
+        if ! dpkg-query -W -f='${Status}' "$package" 2> /dev/null \
+            | grep -q "ok installed"; \
+        then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+install-if-needed() {
+    if requires "$@"; then
+        sudo apt-get install -y "$@"
+    fi
+}
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    echo $'Please provide a destination filename for the opentracker binary.' 1>&2
+    exit 1
+fi
+
+dest_filename="$1"
+
+if [ -e "$dest_filename" ]; then
+    echo $'The given destination filename already exists!' 1>&2
+    exit 1
+fi
+
+# Install build dependencies we need via apt.
+install-if-needed make g++ zlib1g-dev cvs git
+
+# Create a temporary directory for building, which will automatically be
+# purged if anything goes wrong.
+build_directory=`mktemp -d`
+trap "rm -rf $build_directory" EXIT
+
+# Build the libowfat dependency from CVS
+pushd "$build_directory"
+cvs -d :pserver:cvs@cvs.fefe.de:/cvs -z9 co libowfat
+cd libowfat
+make
+
+# Build the opentracker program from git
+cd ..
+git clone git://erdgeist.org/opentracker
+cd opentracker
+make
+
+# Copy the final binary to the destination.
+popd
+cp "$build_directory/opentracker/opentracker" "$dest_filename"
+
+echo
+echo "You now have opentracker. Enjoy!"
