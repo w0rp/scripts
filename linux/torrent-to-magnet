@@ -28,7 +28,6 @@ def main():
     querystring = urlencode([
         ("dn", metadata["info"]["name"]),
         ("tr", metadata["announce"]),
-        ("xl", metadata["info"]["length"]),
     ])
 
     print("magnet:?xt=urn:btih:{}&{}".format(magnet_hash, querystring))
