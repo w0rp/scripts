@@ -29,17 +29,16 @@ cd "$app_name/migrations"
 
 # A command for finding migrations added in this branch
 added_migrations="git diff --name-only --diff-filter=A --relative $branch_name --"
-moved_files=()
+last_moved_file=''
 
 # A function for finding the last migration file.
 find_last_migration() {
     local last_filename
     local last_file_found=0
 
-    if [ "${#moved_files[@]}" -gt 0 ]; then
-        # We have already moved at least one file, so return the last one
-        # we moved. We don't have to search for any more files.
-        echo "${moved_files[-1]}"
+    if [ "$last_moved_file" != '' ]; then
+        # We have already moved a file before, so use that one.
+        echo "$last_moved_file"
         return 0
     fi
 
@@ -106,9 +105,8 @@ for filename in $($added_migrations .); do
     # Fix the dependencies.
     sed -i "${start_line},${end_line}s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
 
-    # Add this file to the array of moved files, so it will become the new
-    # 'last' file.
-    moved_files+=("$new_filename")
+    # Use this moved file as the last moved file.
+    last_moved_file="$new_filename"
 done
 
 # Now add all of the changes.
