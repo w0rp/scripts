@@ -29,14 +29,22 @@ cd "$app_name/migrations"
 
 # A command for finding migrations added in this branch
 added_migrations="git diff --name-only --diff-filter=A --relative $branch_name --"
+moved_files=()
 
 # A function for finding the last migration file.
 find_last_migration() {
     local last_filename
-
     local last_file_found=0
 
-    for last_filename in $(/bin/ls -1 --reverse); do
+    if [ "${#moved_files[@]}" -gt 0 ]; then
+        # We have already moved at least one file, so return the last one
+        # we moved. We don't have to search for any more files.
+        echo "${moved_files[-1]}"
+        return 0
+    fi
+
+    # We haven't moved any files yet, so find the last file which isn't ours.
+    for last_filename in $((git ls-files --with-tree origin/dev && /bin/ls -1) | sort -nur); do
         if ! [[ "$last_filename" == *.py ]]; then
             # Skip files which aren't Python files.
             continue
@@ -47,6 +55,7 @@ find_last_migration() {
             continue
         fi
 
+        # If this file isn't ours, then it's the last file.
         if ! [[ $($added_migrations "$last_filename") ]]; then
             last_file_found=1
             break
@@ -96,6 +105,10 @@ for filename in $($added_migrations .); do
 
     # Fix the dependencies.
     sed -i "${start_line},${end_line}s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
+
+    # Add this file to the array of moved files, so it will become the new
+    # 'last' file.
+    moved_files+=("$new_filename")
 done
 
 # Now add all of the changes.
