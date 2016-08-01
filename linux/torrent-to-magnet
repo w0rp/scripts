@@ -3,34 +3,31 @@
 """
 A Python script for converting a .torrent file to a magnet link.
 
-Python 2 is required for this script, as is the bencode module.
+python-libtorrent is required for this script.
 """
 
-import base64
-import hashlib
 import sys
 from urllib import urlencode
 
-import bencode
+import libtorrent
 
 
 def main():
     if len(sys.argv) != 2:
         sys.exit("Usage: torrent-to-magnet <torrent_filename>")
 
-    with open(sys.argv[1]) as torrent_file:
-        torrent_data = torrent_file.read()
+    session = libtorrent.session()  # noqa
+    info = libtorrent.torrent_info(sys.argv[1])
 
-    metadata = bencode.bdecode(torrent_data)
-    info_data = bencode.bencode(metadata["info"])
-    magnet_hash = base64.b32encode(hashlib.sha1(info_data).digest())
+    params = [
+        ("dn", info.name()),
+    ]
+    params.extend(("tr", tr.url) for tr in info.trackers())
 
-    querystring = urlencode([
-        ("dn", metadata["info"]["name"]),
-        ("tr", metadata["announce"]),
-    ])
-
-    print("magnet:?xt=urn:btih:{}&{}".format(magnet_hash, querystring))
+    print("magnet:?xt=urn:btih:{}&{}".format(
+        info.info_hash(),
+        urlencode(params),
+    ))
 
 if __name__ == "__main__":
     main()
