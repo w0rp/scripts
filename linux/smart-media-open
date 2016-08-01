@@ -1,0 +1,41 @@
+#!/bin/bash -eu
+
+# This is a script for KDE which looks at metadata for files and uses the
+# metadata to determine the most appropriate program to open a file with,
+# beyond just the file type.
+
+if [ $# -ne 1 ] || [ -z "$1" ]; then
+    echo 'Usage: smart-media-open <filename>' 1>&2
+    exit 1
+fi
+
+filename="$1"
+mimetype="$(file -b --mime-type "$filename")"
+is_video=0
+
+if [[ "$mimetype" =~ ^video/ ]]; then
+    is_video=1
+fi
+
+if (( $is_video )); then
+    duration="$(\
+        printf "%.0f\n" \
+        "$(\
+            ffprobe -i "$filename" \
+            -show_entries format=duration \
+            -v quiet -of csv="p=0"\
+        )"\
+    )"
+
+    if [ "$duration" -gt 240 ]; then
+        # This video file is longer than four minutes, so use the Dragon player.
+        exec dragon "$filename"
+    else
+        # Otherwise, use gthumb.
+        exec gthumb "$filename"
+    fi
+fi
+
+# Nothing suitable handler is known of!
+echo "Unable to handle file: $filename" 1>&2
+exit 1
