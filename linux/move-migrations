@@ -43,7 +43,7 @@ find_last_migration() {
     fi
 
     # We haven't moved any files yet, so find the last file which isn't ours.
-    for last_filename in $((git ls-files --with-tree origin/dev && /bin/ls -1) | sort -nur); do
+    for last_filename in $(/bin/ls -1r); do
         if ! [[ "$last_filename" == *.py ]]; then
             # Skip files which aren't Python files.
             continue
