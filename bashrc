@@ -26,5 +26,11 @@ set -o ignoreeof
 export HISTSIZE=10000
 export HISTFILESIZE=20000
 
+# Make completion case-insensitive
+bind "set completion-ignore-case on"
+# Complete immediately to some available option, and allow cycling through
+# options, like in Vim.
+bind 'TAB:menu-complete'
+
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
