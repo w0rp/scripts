@@ -64,28 +64,51 @@ backup() {
     rsync -auv --delete "$1/" "$2"
 }
 
-transcode_for_youtube_1080p_192k() {
-    in_filename="$1"
-    out_filename="$2"
+validate_transcoding_filenames() {
+    if [ -z "$1" ]; then
+        echo "Not input filename was given!"
+        return 1
+    fi
 
-    ffmpeg -i "$in_filename" \
+    if ! [ -f "$1" ]; then
+        echo "Input file does not exist: $1" 1>&2
+        return 1
+    fi
+
+    if [ -z "$2" ]; then
+        echo "Not output filename was given!"
+        return 1
+    fi
+
+    if [ -d "$2" ]; then
+        echo "The output filename is a directory: $2"
+        return 1
+    fi
+}
+
+to_x264_1080p_aac_192k() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" \
     -vcodec libx264 -profile:v high -preset slow \
         -b:v 2000k -maxrate 2000k -bufsize 4000k -vf \
         scale=-1:1080 -threads 0 \
     -acodec aac -b:a 192k -strict -2 \
-    "$out_filename"
+    "$2"
 }
 
-transcode_for_youtube_720p_128k() {
-    in_filename="$1"
-    out_filename="$2"
-
-    ffmpeg -i "$in_filename" \
+to_x264_720p_aac_128k() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" \
     -codec:v libx264 -profile:v high -preset slow \
         -b:v 1000k -maxrate 1000k -bufsize 2000k -vf \
         scale=-1:720 -threads 0 \
     -codec:a aac -b:a 128k -strict -2 \
-    "$out_filename"
+    "$2"
+}
+
+to_wav() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" -acodec pcm_s16le -ar 44100 "$2"
 }
 
 adfs_xml_url() {
