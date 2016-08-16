@@ -31,6 +31,8 @@ bind "set completion-ignore-case on"
 # Complete immediately to some available option, and allow cycling through
 # options, like in Vim.
 bind 'TAB:menu-complete'
+# Shift+Tab should go backwards.
+bind '"\e[Z":menu-complete-backward'
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
