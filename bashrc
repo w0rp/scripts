@@ -28,6 +28,8 @@ export HISTFILESIZE=20000
 
 # Make completion case-insensitive
 bind "set completion-ignore-case on"
+# Show all of the options when completing
+bind "set show-all-if-ambiguous on"
 # Complete immediately to some available option, and allow cycling through
 # options, like in Vim.
 bind 'TAB:menu-complete'
