@@ -32,9 +32,12 @@ bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 # Complete immediately to some available option, and allow cycling through
 # options, like in Vim.
-bind 'TAB:menu-complete'
+#
+# We'll start completion with the last match first, which is usually what
+# we want.
+bind 'TAB:menu-complete-backward'
 # Shift+Tab should go backwards.
-bind '"\e[Z":menu-complete-backward'
+bind '"\e[Z":menu-complete'
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
