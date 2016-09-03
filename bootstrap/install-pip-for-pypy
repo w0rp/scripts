@@ -1,0 +1,6 @@
+#!/bin/bash -eu
+
+# Use easy_install from the current Python interpreter installation to install
+# PIP into the pypy dist-packages directory.
+sudo PYTHONPATH='/usr/lib/pypy/dist-packages/' \
+    easy_install --install-dir=/usr/lib/pypy/dist-packages/ pip
