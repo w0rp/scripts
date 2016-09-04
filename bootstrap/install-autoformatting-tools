@@ -1,3 +1,5 @@
 #!/bin/bash -eu
 
 sudo pip install --upgrade pep8 autopep8
+
+sudo npm -g install js-beautify
