@@ -1,15 +1,33 @@
 #!/bin/bash -eu
 
+file_list=()
+
 if ! [ -t 0 ]; then
     # If we are piping lines into this script, then open them with gvim.
-    ~/script/linux/forward-lines /usr/bin/gvim --remote-tab-silent
-elif [ $# -eq 0 ]; then
+    while read line; do
+        file_list+=("$line")
+    done
+else
+    # If we are taking arguments, then read those.
+    for line in "$@"; do
+        file_list+=("$line")
+    done
+fi
+
+if [ ${#file_list[@]} -eq 0 ]; then
     # If we have no files as arguments, then open a new tab and focus
     # the window.
     /usr/bin/gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
         > /dev/null 2>&1|| /usr/bin/gvim > /dev/null 2>&1
     ~/script/linux/raise-by-class gvim
 else
-    # Open all of the listed files in GVim
-    /usr/bin/gvim --remote-tab-silent "$@" > /dev/null 2>&1
+    for file in "${file_list[@]}"; do
+        dir="$(dirname "$file")"
+
+        # Automatically create parent directories for files we edit.
+        mkdir -p "$dir"
+
+        # Open all of the listed files in GVim
+        /usr/bin/gvim --remote-tab-silent "$file" > /dev/null 2>&1
+    done
 fi
