@@ -1,0 +1,10 @@
+#!/bin/bash -eu
+
+export PATH="$PATH:$HOME/.config/blather"
+
+cd ~/.config/blather
+
+# Remove the listening file, so we always start in "off" mode.
+rm -f ~/.config/blather/listening
+
+exec python ~/bin/blather/Blather.py -c

@@ -1,0 +1,48 @@
+#!/bin/bash -eu
+
+# Use a Browser user agent string so the server won't try and block us.
+user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30"
+site='http://www.speech.cs.cmu.edu'
+blather_dir="$HOME/.config/blather"
+blather_language_dir="$HOME/.config/blather/language"
+corpus_file="$blather_dir/sentences.corpus"
+
+mkdir -p "$blather_language_dir"
+
+echo 'Running Blather to update corpus...' 1>&2
+rm -f "$corpus_file"
+timeout 2s python ~/bin/blather/Blather.py &> /dev/null || true
+
+if [ ! -f "$corpus_file" ]; then
+    echo 'The corpus file was not re-created!' 1>&2
+    echo 'Check if you can run Blather!' 1>&2
+    exit 1
+fi
+
+echo 'Sending corpus to lmtool...' 1>&2
+echo 1>&2
+
+html_output=$(
+    curl -A "$user_agent" \
+    --form 'formtype=simple' \
+    --form "corpus=@$corpus_file" \
+    -L "$site/cgi-bin/tools/lmtool/run"
+)
+
+location=$(echo "$html_output" | grep -Po '(?<=Index of ).*(?=</title>)')
+lm_basename=$(echo "$html_output" | grep -Po '(?<=>)[^>]+?\.lm(?=</a>)')
+dic_basename=$(echo "$html_output" | grep -Po '(?<=>)[^>]+?\.dic(?=</a>)')
+
+lm_url="$site$location/$lm_basename"
+# https://www.youtube.com/watch?v=NHO84rOp8FQ
+dic_url="$site$location/$dic_basename"
+
+echo 'Downloading lm file...' 1>&2
+echo 1>&2
+curl -A "$user_agent" -o "$blather_language_dir/lm" "$lm_url"
+echo 1>&2
+echo 'Downloading dic file...' 1>&2
+curl -A "$user_agent" -o "$blather_language_dir/dic" "$dic_url"
+
+echo 1>&2
+echo 'Blather dictionary updated successfully!' 1>&2
