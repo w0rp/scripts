@@ -8,7 +8,7 @@
 
 PS1='\W$ '
 
-export PATH="$PATH:~/bin:~/script/linux"
+export PATH="$PATH:$HOME/bin:$HOME/script/linux"
 # Add the .vim dir to PYTHONPATH for rope.
 export PYTHONPATH="$HOME/.vim:$PYTHONPATH"
 
