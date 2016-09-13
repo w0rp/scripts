@@ -41,3 +41,6 @@ bind '"\e[Z":menu-complete'
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
+
+# Stop GVim trying to open binary files.
+complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' gvim
