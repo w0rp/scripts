@@ -2,6 +2,12 @@
 
 file_list=()
 
+if [ -f /usr/local/bin/gvim ]; then
+    gvim='/usr/local/bin/gvim'
+else
+    gvim='/usr/bin/gvim'
+fi
+
 if ! [ -t 0 ]; then
     # If we are piping lines into this script, then open them with gvim.
     while read line; do
@@ -17,7 +23,7 @@ fi
 if [ ${#file_list[@]} -eq 0 ]; then
     # If we have no files as arguments, then open a new tab and focus
     # the window.
-    /usr/bin/gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
+    $gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
         > /dev/null 2>&1|| /usr/bin/gvim > /dev/null 2>&1
     ~/script/linux/raise-by-class gvim
 else
@@ -28,6 +34,6 @@ else
         mkdir -p "$dir"
 
         # Open all of the listed files in GVim
-        /usr/bin/gvim --remote-tab-silent "$file" > /dev/null 2>&1
+        $gvim --remote-tab-silent "$file" > /dev/null 2>&1
     done
 fi
