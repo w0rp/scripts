@@ -28,7 +28,7 @@ if [ ${#file_list[@]} -eq 0 ]; then
     ~/script/linux/raise-by-class gvim
 else
     for file in "${file_list[@]}"; do
-        dir="$(dirname "$file")"
+        dir="$(dirname -- "$file")"
 
         # Automatically create parent directories for files we edit.
         mkdir -p "$dir"
