@@ -20,7 +20,7 @@ alias tracking=$'git for-each-ref --format=\'%(upstream:short)\' $(git symbolic-
 alias merged-to-dev=$'git branch --merged dev | cut -c 3- | grep -P --invert-match \'^(?:master|dev|release/.+)$\''
 
 # Add aliases for printing GitHub URLs for things.
-alias github-url=$'echo "https://github.com/$(git config --get remote.origin.url | grep -Po \'(?<=:).+(?=\\.git)\')"'
+alias github-url=$'echo "https://github.com/$(git config --get remote.upstream.url | grep -Po \'(?<=:).+(?=\\.git)\')"'
 alias github-commit-url=$'echo "$(github-url)/commit/$(git rev-parse HEAD)"'
 alias github-branch-url=$'echo "$(github-url)/tree/$(git rev-parse --abbrev-ref HEAD)"'
 
