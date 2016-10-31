@@ -32,8 +32,8 @@ else
 
         # Automatically create parent directories for files we edit.
         mkdir -p "$dir"
-
-        # Open all of the listed files in GVim
-        $gvim --remote-tab-silent "$file" > /dev/null 2>&1
     done
+
+    # Open all of the listed files in GVim
+    $gvim --remote-tab-silent "${file_list[@]}" > /dev/null 2>&1
 fi
