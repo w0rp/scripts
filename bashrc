@@ -44,3 +44,5 @@ __git_complete move-migrations _git_checkout
 
 # Stop GVim trying to open binary files.
 complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' gvim
+# Don't complete with files from other shell dialects for source
+complete -F _minimal -X '@(*.csh|*.fish|*.zsh)' source
