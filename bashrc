@@ -4,7 +4,7 @@
 
 . ~/script/aliases
 . ~/script/functions
-. ~/script/git-completion.bash
+. ~/script/completion/rules
 
 PS1='\W$ '
 
@@ -16,33 +16,9 @@ export PYTHONPATH="$HOME/.vim:$PYTHONPATH"
 # typing involved.
 export GIT_MERGE_AUTOEDIT=no
 
-# Use completion for dub.
-source ~/script/completion/dub-completion.bash
-
 # Stop Ctrl+D from closing the terminal.
 set -o ignoreeof
 
 # Make history ten times as large as it is by default.
 export HISTSIZE=10000
 export HISTFILESIZE=20000
-
-# Make completion case-insensitive
-bind "set completion-ignore-case on"
-# Show all of the options when completing
-bind "set show-all-if-ambiguous on"
-# Complete immediately to some available option, and allow cycling through
-# options, like in Vim.
-#
-# We'll start completion with the last match first, which is usually what
-# we want.
-bind 'TAB:menu-complete-backward'
-# Shift+Tab should go backwards.
-bind '"\e[Z":menu-complete'
-
-# Use git branch completion for move-migrations
-__git_complete move-migrations _git_checkout
-
-# Stop GVim trying to open binary files.
-complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' gvim
-# Don't complete with files from other shell dialects for source
-complete -F _minimal -X '@(*.csh|*.fish|*.zsh)' source

@@ -30,13 +30,6 @@ alias github-commit-url=$'echo "$(github-url)/commit/$(git rev-parse HEAD)"'
 # shellcheck disable=SC2139
 alias github-branch-url=$'echo "$(github-url)/tree/$(git rev-parse --abbrev-ref HEAD)"'
 
-. ~/script/git-completion.bash
-
-# Use git checkout aliases for gco
-__git_complete gco _git_checkout
-__git_complete make-pr _git_checkout
-complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' ga
-
 # Make GVim open files in a tab instead of a window.
 alias gvim='~/script/linux/gvim'
 
