@@ -20,7 +20,21 @@ if [ ! -d ~/.pip-packages ]; then
     mkdir ~/.pip-packages
 fi
 
-test -f "$env_dir"/bin/activate || virtualenv --no-site-packages -p "$python" "$env_dir"
+creating=0
+
+if [ ! -f "$env_dir"/bin/activate ]; then
+    creating=1
+fi
+
+if (( creating )); then
+    virtualenv --no-site-packages -p "$python" "$env_dir"
+fi
+
 source "$env_dir"/bin/activate
-pip install --download-cache ~/.pip-packages -r requirements.txt
+
+if (( creating )); then
+    easy_install -U pip
+fi
+
+pip install -r requirements.txt
 
