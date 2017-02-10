@@ -22,6 +22,8 @@ while [ $# -ne 0 ]; do
     esac
 done
 
+dir="$(pwd)"
+
 # Walk up parent paths until we git the git directory.
 while [ ! -d  '.git/objects' ] && [ "$PWD" != / ]; do
     cd ..
@@ -32,11 +34,25 @@ if [ ! -d  '.git/objects' ]; then
     exit 1
 fi
 
+if [ -f '.gitmodules' ]; then
+    # Look through git modules.
+    # If the directory we were originally in was inside of a git submodule,
+    # Then we should change directories to the root of the submodule.
+    for path in $(grep -Po '(?<=path = ).*' .gitmodules ); do
+        mod="$(pwd)/$path"
+
+        if [ "${dir:0:${#mod}}" == "$mod" ]; then
+            cd "$mod"
+            break
+        fi
+    done
+fi
+
 function escape-slashes() {
     echo "$1" | sed -r 's/\\\//\//g' | sed -r 's/\//\\\//g'
 }
 
-git_root=`pwd`
+git_root="$(pwd)"
 
 if [ $# -ne 0 ]; then
     git diff --name-only $cached "$1" | uniq | sed -e "s/^/$(escape-slashes "$git_root")\\//"
