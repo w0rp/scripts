@@ -24,7 +24,9 @@ alias merged-to-dev=$'git branch --merged dev | cut -c 3- | grep -P --invert-mat
 
 # Add aliases for printing GitHub URLs for things.
 # shellcheck disable=SC2139
-alias github-url=$'echo "https://github.com/$(git config --get remote.upstream.url | grep -Po \'(?<=:).+(?=\\.git)\')"'
+alias git-current-remote-name=$'git rev-parse --abbrev-ref --symbolic-full-name @{u} | sed \'s:/.*$::\''
+# shellcheck disable=SC2139
+alias github-url=$'echo "https://github.com/$(git config --get remote.$(git-current-remote-name).url | grep -Po \'(?<=:).+(?=\\.git)\')"'
 # shellcheck disable=SC2139
 alias github-commit-url=$'echo "$(github-url)/commit/$(git rev-parse HEAD)"'
 # shellcheck disable=SC2139
