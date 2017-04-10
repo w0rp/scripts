@@ -10,6 +10,7 @@ alias amend='git commit --amend --no-edit'
 alias st='git status'
 alias com='git commit -m'
 alias gco='git checkout'
+alias gls='git ls-tree -r --name-only'
 # My custom command for deleting everything.
 alias gw='git-wipeout'
 alias gsquash='git merge --ff --squash'
