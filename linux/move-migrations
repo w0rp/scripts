@@ -74,11 +74,11 @@ find_last_migration > /dev/null
 
 for filename in $($added_migrations .); do
     end_filename=$(find_last_migration)
-    end_migration_name="${end_filename::-3}"
+    end_migration_name="${end_filename::${#end_filename} - 3}"
 
     # Extract the number and the suffix.
     migration_number=$(echo "$end_filename" | grep -o '^[0-9]\+')
-    migration_suffix=$(echo "$filename" | sed 's/^[0-9]\+//')
+    migration_suffix=$(echo "$filename" | sed 's/^[0-9]*//')
 
     # Increment it.
     migration_number=$(printf '%04d' $(expr $migration_number + 1))
@@ -103,7 +103,7 @@ for filename in $($added_migrations .); do
     end_line=$(expr $start_line + $end_offset)
 
     # Fix the dependencies.
-    sed -i "${start_line},${end_line}s/('$app_name', '[^']\+')/('$app_name', '$end_migration_name')/" "$new_filename"
+    sed -i.bak "${start_line},${end_line}s/('$app_name', '[^']*')/('$app_name', '$end_migration_name')/" "$new_filename"; rm -f "$new_filename".bak
 
     # Use this moved file as the last moved file.
     last_moved_file="$new_filename"
