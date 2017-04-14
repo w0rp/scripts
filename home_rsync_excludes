@@ -12,6 +12,25 @@
 /.android/cache
 /.backup
 /.cache
+/.config/google-chrome*/BrowserMetrics-active.pma
+/.config/google-chrome*/CertificateTransparency
+/.config/google-chrome*/Default/Application Cache
+/.config/google-chrome*/Default/Extensions/**/messages.json
+/.config/google-chrome*/Default/Extensions/Temp/
+/.config/google-chrome*/Default/File System
+/.config/google-chrome*/Default/IndexedDB
+/.config/google-chrome*/Default/Local Storage
+/.config/google-chrome*/Default/Pepper Data
+/.config/google-chrome*/Default/Service Worker/CacheStorage
+/.config/google-chrome*/Default/Service Worker/ScriptCache
+/.config/google-chrome*/Default/Session Storage
+/.config/google-chrome*/Default/blob_storage
+/.config/google-chrome*/Default/databases
+/.config/google-chrome*/PepperFlash
+/.config/google-chrome*/Singleton*
+/.config/google-chrome*/**.ldb
+/.config/google-chrome*/**.log
+/.config/google-chrome*/**.sth
 /.config/gthumb/active_filter.xml
 /.config/gthumb/history.xbel
 /.config/hexchat/logs/
@@ -43,6 +62,7 @@
 /.mozilla/firefox/*/jetpack/
 /.mozilla/firefox/*/minidumps/
 /.mozilla/firefox/*/places.*
+/.mozilla/firefox/*/saved-telemetry-pings
 /.mozilla/firefox/*/sessionCheckpoints.json
 /.mozilla/firefox/*/sessionstore-backups/
 /.mozilla/firefox/*/storage/
@@ -66,6 +86,8 @@
 /bin
 /content/outbox
 /tabby
+ShaderCache
+Subresource Filter
 Temporary Internet Files
 Thumbs.db
 ui/.cache/
