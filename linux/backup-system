@@ -115,6 +115,8 @@ root_actions() {
         --include='/etc/apt/sources.list.d/*' \
         --include='/etc/samba/' \
         --include='/etc/samba/*' \
+        --include='/etc/ssmtp/' \
+        --include='/etc/ssmtp/*' \
         --include='/etc/network/' \
         --include='/etc/network/interfaces' \
         --include='/var/' \
