@@ -10,6 +10,7 @@ service_exists() {
 }
 
 restore=0
+delete=0
 root_tasks=1
 
 while [ $# -ne 0 ]; do
@@ -20,6 +21,7 @@ while [ $# -ne 0 ]; do
     ;;
     --delete)
         rsync="$rsync --delete"
+        delete=1
         shift
     ;;
     --no-root)
@@ -173,6 +175,12 @@ else
     from_home_dir="$HOME"
     to_home_dir="$dest_dir/home/$user/"
     home_rsync="$rsync"
+
+    # For the /home/ backup, also delete any excluded files when backing up
+    # the /home/ directory
+    if (( $delete )); then
+        home_rsync="$home_rsync --delete-excluded"
+    fi
 
     mkdir -p "$to_home_dir"
 fi
