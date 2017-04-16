@@ -1,0 +1,31 @@
+#!/bin/bash -eu
+
+# This script makes it easy to record audio from M-Audio devices using only
+# ALSA and command line tools.
+
+if ! command -v flac &> /dev/null; then
+    echo 'Please install flac first!' 1>&2
+    exit 1
+fi
+
+dir="$HOME/content/audio/recordings"
+
+mkdir -p "$dir"
+
+filename="$(date '+%Y-%m-%d %H-%M-%S').flac"
+
+echo 'Recording audio...'
+# The M-Audio device outputs 32-bit little endian, at 44,100Hz, on channel 2.
+arecord --device=hw:2 -f S32_LE -r44100 -c 2 "$dir/output-32bit.wav"
+echo 'Converting from 32-bit PCM to 16-bit PCM...'
+# We want 16-bit PCM for playback.
+ffmpeg -loglevel error -y -i "$dir/output-32bit.wav" -acodec pcm_s16le "$dir/output-16bit.wav"
+echo 'Converting to FLAC...'
+flac -s --best -f -o "$dir/$filename" "$dir/output-16bit.wav"
+
+rm "$dir/output-32bit.wav"
+rm "$dir/output-16bit.wav"
+
+echo
+echo
+echo "Your recording is now available as $filename"
