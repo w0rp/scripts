@@ -21,6 +21,11 @@ if git config --get remote.upstream.url > /dev/null; then
     upstream='upstream'
 elif git config --get remote.origin.url > /dev/null; then
     upstream='origin'
+else
+    echo 'Please run this command from a git repository' 1>&2
+    # shellcheck disable=SC2016
+    echo 'A remote named `upstream` or `origin` is required' 1>&2
+    exit 1
 fi
 
 # Determine the path on GitHub from the remote URLs.
