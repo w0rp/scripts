@@ -5,32 +5,44 @@ source ~/script/completion/git-completion.bash
 # Use completion for dub.
 source ~/script/completion/dub-completion.bash
 
+# Create some optional options, so completion rules will work on Mac OSX.
+xspec_options=''
+
+# shellcheck disable=2034
+if declare -f _filedir_xspec > /dev/null; then
+    xspec_options='-F _filedir_xspec'
+fi
+
+minimal_options=''
+
+# shellcheck disable=2034
+if declare -f _minimal > /dev/null; then
+    minimal_options='-F _minimal'
+fi
+
 # Use git checkout aliases for gco
 __git_complete gco _git_checkout
 __git_complete make-pr _git_checkout
-complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' ga
+
+# shellcheck disable=2086
+complete $xspec_options -X '@(*.pyc|__pycache__)' ga
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
 
 # Stop GVim trying to open binary files.
-complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' gvim
+# shellcheck disable=2086
+complete $xspec_options -X '@(*.pyc|__pycache__)' gvim
 # Don't complete with files from other shell dialects for source
-complete -F _minimal -X '@(*.csh|*.fish|*.zsh|*.py)' source
+# shellcheck disable=2086
+complete $minimal_options -X '@(*.csh|*.fish|*.zsh|*.py)' source
 
-
-# Set these settings if we aren't running on a Mac.
-if ! [[ "$OSTYPE" =~ ^darwin ]]; then
-    # Make completion case-insensitive
-    bind "set completion-ignore-case on"
-    # Show all of the options when completing
-    bind "set show-all-if-ambiguous on"
-    # Complete immediately to some available option, and allow cycling through
-    # options, like in Vim.
-    #
-    # We'll start completion with the last match first, which is usually what
-    # we want.
-    bind 'TAB:menu-complete-backward'
-    # Shift+Tab should go backwards.
-    bind '"\e[Z":menu-complete'
-fi
+# Make completion case-insensitive
+bind "set completion-ignore-case on"
+# Show all of the options when completing
+bind "set show-all-if-ambiguous on"
+# Expand to a full match with tab completion.
+bind 'TAB:menu-complete'
+# Shift+Tab should go backwards.
+# This has no effect on Mac OSX
+bind '"\e[Z":menu-complete'
