@@ -1,39 +1,46 @@
 #!/bin/bash -eu
 
-file_list=()
+FILE_OPENED=0
 
-if [ -f /usr/local/bin/gvim ]; then
+if [ -f /Applications/MacVim.app/Contents/bin/mvim ]; then
+    # This is the MacVim path for launching from a terminal.
+    gvim='/Applications/MacVim.app/Contents/bin/mvim'
+elif [ -f /usr/local/bin/gvim ]; then
     gvim='/usr/local/bin/gvim'
 else
     gvim='/usr/bin/gvim'
 fi
 
+function open-file() {
+    local file
+    file="$1"
+    local dir
+    dir="$(dirname -- "$file")"
+
+    # Automatically create parent directories for files we edit.
+    mkdir -p "$dir"
+    $gvim --remote-tab-silent "$file" > /dev/null 2>&1
+    FILE_OPENED=1
+}
+
 if ! [ -t 0 ]; then
     # If we are piping lines into this script, then open them with gvim.
-    while read line; do
-        file_list+=("$line")
+    while read -r; do
+        open-file "$REPLY"
+        ~/script/linux/raise-by-class gvim
     done
 else
     # If we are taking arguments, then read those.
-    for line in "$@"; do
-        file_list+=("$line")
+    for filename in "$@"; do
+        open-file "$filename"
     done
-fi
 
-if [ ${#file_list[@]} -eq 0 ]; then
-    # If we have no files as arguments, then open a new tab and focus
-    # the window.
-    $gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
-        > /dev/null 2>&1|| /usr/bin/gvim > /dev/null 2>&1
+    if ! ((FILE_OPENED)); then
+        # If we have no files as arguments, then open a new tab and focus
+        # the window.
+        $gvim --remote-send '<Esc>:tablast<CR><Esc>:tabnew<CR>' \
+            > /dev/null 2>&1 || $gvim > /dev/null 2>&1
+    fi
+
     ~/script/linux/raise-by-class gvim
-else
-    for file in "${file_list[@]}"; do
-        dir="$(dirname -- "$file")"
-
-        # Automatically create parent directories for files we edit.
-        mkdir -p "$dir"
-    done
-
-    # Open all of the listed files in GVim
-    $gvim --remote-tab-silent "${file_list[@]}" > /dev/null 2>&1
 fi
