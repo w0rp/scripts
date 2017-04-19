@@ -27,7 +27,7 @@ fi
 repo_path="$(git config --get remote."$upstream".url | grep -Po '(?<=github.com:)[^\.]+')"
 
 my_branch="$(git rev-parse --abbrev-ref HEAD)"
-tracking_branch="$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))"
+tracking_branch="$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")"
 
 if [ "$tracking_branch" == "$upstream/$my_branch" ]; then
     from="$my_branch"
@@ -38,4 +38,8 @@ else
     from="$username:$my_branch"
 fi
 
-xdg-open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
+if command -v open > /dev/null; then
+    open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
+else
+    xdg-open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
+fi

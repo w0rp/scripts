@@ -34,7 +34,7 @@ alias github-commit-url=$'echo "$(github-url)/commit/$(git rev-parse HEAD)"'
 alias github-branch-url=$'echo "$(github-url)/tree/$(git rev-parse --abbrev-ref HEAD)"'
 
 # Make GVim open files in a tab instead of a window.
-alias gvim='~/script/linux/gvim'
+alias gvim='~/script/unix/gvim'
 
 # Add aliases for the OpenSSL commands I can never remember.
 alias check-cert='openssl x509 -text -noout -in'

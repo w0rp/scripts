@@ -27,7 +27,11 @@ if ! [ -t 0 ]; then
     # If we are piping lines into this script, then open them with gvim.
     while read -r; do
         open-file "$REPLY"
-        ~/script/linux/raise-by-class gvim
+
+        # Switch to the window on Linux
+        if ! [[ "$OSTYPE" =~ ^darwin ]]; then
+            ~/script/linux/raise-by-class gvim
+        fi
     done
 else
     # If we are taking arguments, then read those.
@@ -42,5 +46,8 @@ else
             > /dev/null 2>&1 || $gvim > /dev/null 2>&1
     fi
 
-    ~/script/linux/raise-by-class gvim
+    # Switch to the window on Linux
+    if ! [[ "$OSTYPE" =~ ^darwin ]]; then
+        ~/script/linux/raise-by-class gvim
+    fi
 fi
