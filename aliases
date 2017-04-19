@@ -47,3 +47,11 @@ alias rerun-hourly='crontab -l | grep ^@hourly | cut -f 2- -d " " | while read c
 
 # An alias for loading a missing apt key, using the Ubuntu key server.
 alias load-apt-key='sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys'
+
+# aliases specific to Mac OSX.
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+    # Automatically use the MacVim version of Vim.
+    if [ -f /Applications/MacVim.app/Contents/MacOS/Vim ]; then
+        alias vim=/Applications/MacVim.app/Contents/MacOS/Vim
+    fi
+fi

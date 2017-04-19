@@ -8,7 +8,15 @@
 
 PS1='\W$ '
 
-export PATH="$PATH:$HOME/bin:$HOME/script/linux"
+export PATH="$PATH:$HOME/bin"
+# Scripts which should work on any Unix flavour.
+export PATH="$PATH:$HOME/script/unix"
+
+# Don't load the Linux-only scripts on Mac OSX
+if ! [[ "$OSTYPE" =~ ^darwin ]]; then
+    export PATH="$PATH:$HOME/script/linux"
+fi
+
 # Add the .vim dir to PYTHONPATH for rope.
 export PYTHONPATH="$HOME/.vim:$PYTHONPATH"
 
