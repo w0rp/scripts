@@ -5,37 +5,22 @@ source ~/script/completion/git-completion.bash
 # Use completion for dub.
 source ~/script/completion/dub-completion.bash
 
-# Create some optional options, so completion rules will work on Mac OSX.
-xspec_options=''
-
-# shellcheck disable=2034
-if declare -f _filedir_xspec > /dev/null; then
-    xspec_options='-F _filedir_xspec'
-fi
-
-minimal_options=''
-
-# shellcheck disable=2034
-if declare -f _minimal > /dev/null; then
-    minimal_options='-F _minimal'
-fi
-
 # Use git checkout aliases for gco
 __git_complete gco _git_checkout
 __git_complete make-pr _git_checkout
 
-# shellcheck disable=2086
-complete $xspec_options -X '@(*.pyc|__pycache__)' ga
-
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
 
-# Stop GVim trying to open binary files.
-# shellcheck disable=2086
-complete $xspec_options -X '@(*.pyc|__pycache__)' gvim
-# Don't complete with files from other shell dialects for source
-# shellcheck disable=2086
-complete $minimal_options -X '@(*.csh|*.fish|*.zsh|*.py)' source
+# Don't enable these rules on Mac, as the completion scripts aren't there.
+if ! [[ "$OSTYPE" =~ ^darwin ]]; then
+    # Stop GVim trying to open binary files.
+    complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' gvim
+    # Stop the `git add` alias adding binary files.
+    complete -F _filedir_xspec -X '@(*.pyc|__pycache__)' ga
+    # Don't complete with files from other shell dialects for source
+    complete -F _minimal -X '@(*.csh|*.fish|*.zsh|*.py)' source
+fi
 
 # Make completion case-insensitive
 bind "set completion-ignore-case on"
