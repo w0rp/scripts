@@ -30,4 +30,4 @@ bind "set show-all-if-ambiguous on"
 bind 'TAB:menu-complete'
 # Shift+Tab should go backwards.
 # This has no effect on Mac OSX
-bind '"\e[Z":menu-complete'
+bind '"\e[Z":menu-complete-backward'
