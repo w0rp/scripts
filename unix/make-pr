@@ -43,8 +43,10 @@ else
     from="$username:$my_branch"
 fi
 
-if command -v open > /dev/null; then
-    open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
+url="https://github.com/$repo_path/compare/$branch_name...$from?expand=1"
+
+if command -v xdg-open > /dev/null; then
+    xdg-open "$url" > /dev/null
 else
-    xdg-open "https://github.com/$repo_path/compare/$branch_name...$from?expand=1" > /dev/null
+    open "$url" > /dev/null
 fi
