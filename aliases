@@ -11,6 +11,9 @@ alias st='git status'
 alias com='git commit -m'
 alias gco='git checkout'
 alias gls='git ls-tree -r --name-only'
+# Creating quick ZIPs for git repos.
+# shellcheck disable=SC2139
+alias git-zip='git archive --format zip "$(git rev-parse HEAD)" --output'
 # My custom command for deleting everything.
 alias gw='git-wipeout'
 alias gsquash='git merge --ff --squash'
