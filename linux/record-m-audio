@@ -10,7 +10,11 @@ fi
 
 dir="$HOME/content/audio/recordings"
 filename="$(date '+%Y-%m-%d %H-%M-%S').flac"
-device="$(arecord -l | grep 'M2X2M.*device 0' | sed 's/^card \([0-9][0-9]*\):.*/\1/')"
+device="$(
+    arecord -l \
+    | grep 'M2X2M.*device 0' \
+    | sed 's/^card \([0-9][0-9]*\):.*/\1/'
+)"
 
 if [ -z "$device" ]; then
     echo $'Couldn\'t find the audio device!' 1>&2
@@ -25,11 +29,16 @@ echo 'Recording audio...'
 arecord --device=hw:"$device" -f S32_LE -r44100 -c 2 "$dir/output-32bit.wav"
 echo 'Converting from 32-bit PCM to 16-bit PCM...'
 # We want 16-bit PCM for playback.
-ffmpeg -loglevel error -y -i "$dir/output-32bit.wav" -acodec pcm_s16le "$dir/output-16bit.wav"
+ffmpeg -loglevel error -y -i "$dir/output-32bit.wav" -acodec pcm_s16le \
+    "$dir/output-16bit-lowvolume.wav"
+# Increase the volume on the recordings, as they are very quiet.
+ffmpeg -loglevel error -y -i "$dir/output-16bit-lowvolume.wav" \
+    -af "volume=16.0" "$dir/output-16bit.wav"
 echo 'Converting to FLAC...'
 flac -s --best -f -o "$dir/$filename" "$dir/output-16bit.wav"
 
 rm "$dir/output-32bit.wav"
+rm "$dir/output-16bit-lowvolume.wav"
 rm "$dir/output-16bit.wav"
 
 echo
