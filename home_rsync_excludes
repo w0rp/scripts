@@ -76,6 +76,9 @@
 /.steam/
 /.steampid
 /.thunderbird/
+/.vim/.backup
+/.vim/.swp
+/.vim/.undo
 /.vimcrap
 /.viminfo
 /.warsow-*/
