@@ -14,7 +14,7 @@ git config --global pull.rebase true
 git config --global --add merge.ff false
 
 # Default `git merge` by itself to merging upstream to the branch.
-git config merge.defaultToUpstream true
+git config --global merge.defaultToUpstream true
 
 # Make git use "patience diff" by default for everything.
 git config --global diff.algorithm patience
