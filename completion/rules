@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Load completion functions for Bash, where available.
+if [ -f /etc/bash_completion ]; then
+    source /etc/bash_completion
+fi
+
 # Use completion for git.
 source ~/script/completion/git-completion.bash
 # Use completion for dub.
