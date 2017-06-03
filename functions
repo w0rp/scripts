@@ -123,3 +123,8 @@ download_adfs_xml() {
 
     wget --no-check-certificate "$url" -O "${domain}-metadata.xml" || rm -f "${domain}-metadata.xml"
 }
+
+# A function for conveniently adding remotes for GitHub forks.
+add-github-remote() {
+    git remote add "$1" "git@github.com:${1}$(git remote -v | grep -o '/.*\.git' | uniq)"
+}
