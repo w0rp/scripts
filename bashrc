@@ -30,3 +30,5 @@ set -o ignoreeof
 # Make history ten times as large as it is by default.
 export HISTSIZE=10000
 export HISTFILESIZE=20000
+
+shopt -s globstar
