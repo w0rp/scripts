@@ -41,12 +41,9 @@ if (!(Test-Path -Path C:\vader)){
   popd
 }
 
-if (!(Test-Path -Path C:\projects\ale)){
+if (!(Test-Path -Path C:\testplugin)){
   echo 'Setting up ALE project...'
-  if (!(Test-Path -Path C:\projects)){
-    New-Item -ItemType directory -Path C:\projects
-  }
-  git clone https://github.com/w0rp/ale.git C:\projects\ale 2> $null
+  git clone https://github.com/w0rp/ale.git C:\testplugin 2> $null
 }
 
 echo 'Good to go!'
