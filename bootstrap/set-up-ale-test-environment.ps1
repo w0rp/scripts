@@ -20,7 +20,7 @@ if (!(Test-Path -Path 'C:\Program Files\git')){
 
 if (!(Test-Path -Path "$env:USERPROFILE\vimfiles")){
   echo 'Installing my Vim config...'
-  git clone https://github.com/w0rp/vim.git "$env:USERPROFILE\vimfiles" 2> $null
+  git clone --recursive https://github.com/w0rp/vim.git "$env:USERPROFILE\vimfiles" 2> $null
 }
 
 # Download minimal Vim executables and runtimes, and unzip them.
