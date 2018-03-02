@@ -1,0 +1,20 @@
+#!/bin/bash -eu
+
+# This script runs stubgen to produce an 'out' directory, and then rsyncs the
+# new stubs into the 'stubs' directory, so they can be used.
+
+if [ $# -eq 0 ]; then
+    echo 'No arguments given' 1>&2
+    exit 1
+fi
+
+if [ -d out ]; then
+    find out \( -name '*.py' -o -name '*.pyi' \) -delete
+    rmdir out
+fi
+
+mkdir out
+stubgen "$@"
+
+rsync -auv out/ stubs/
+rm -r out
