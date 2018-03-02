@@ -1,0 +1,13 @@
+#!/bin/bash -eu
+
+# This script uses sed to transform the output of vim -w into something
+# that can be easily read and understood.
+
+# \r is a newline
+# \001 is Control + A
+# \003 is Control + C
+
+sed -n l "$1" \
+    | sed 's/\\r/\n/g' \
+    | sed 's/\\003/<Control-c>/g' \
+    | sed 's/\\001/<Control-a>/g'
