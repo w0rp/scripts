@@ -32,3 +32,7 @@ export HISTSIZE=10000
 export HISTFILESIZE=20000
 
 shopt -s globstar
+
+# Set up the gpg agent.
+GPG_TTY="$(tty)"
+export GPG_TTY
