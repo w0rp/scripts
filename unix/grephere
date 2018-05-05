@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+# grep all of this directory's files, excluding directories and binary files.
+
+grep "$1" -I --exclude-dir=* ./*
