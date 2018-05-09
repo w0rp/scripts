@@ -65,7 +65,7 @@ if [ "$dest_dir" == '/' ]; then
 fi
 
 root_actions() {
-    if (( $restore )); then
+    if ((restore)); then
         local from_dir="$dest_dir"
         local to_dir="/"
     else
@@ -75,7 +75,7 @@ root_actions() {
 
     echo 'Syncing apt packages' 1>&2
 
-    if (( $restore )); then
+    if ((restore)); then
         # rsync apt sources first, so we know where to install from.
         $root_rsync \
             --include='/' \
@@ -129,7 +129,7 @@ root_actions() {
         --exclude='*' \
         "$from_dir/" "$to_dir/"
 
-    if (( $restore )); then
+    if ((restore)); then
         if service_exists ssh; then
             # Restart SSH to apply new settings.
             service ssh restart
@@ -140,7 +140,7 @@ root_actions() {
     fi
 }
 
-if (( $restore )); then
+if ((restore)); then
     # Non-root system restore tasks should go here.
     true
 else
@@ -151,8 +151,8 @@ else
     apt-mark showmanual > "$dest_dir/apt-packages"
 fi
 
-if (( $root_tasks )); then
-    if (( $restore )); then
+if ((root_tasks)); then
+    if ((restore)); then
         root_rsync="$rsync"
     else
         root_rsync="$rsync --chown=$user:$user"
@@ -167,7 +167,7 @@ if (( $root_tasks )); then
     su --shell /bin/bash -- -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
 fi
 
-if (( $restore )); then
+if ((restore)); then
     from_home_dir="$dest_dir/home/$user/"
     to_home_dir="$HOME"
     home_rsync="$rsync --chown=$user:$user"
@@ -178,7 +178,7 @@ else
 
     # For the /home/ backup, also delete any excluded files when backing up
     # the /home/ directory
-    if (( $delete )); then
+    if ((delete)); then
         home_rsync="$home_rsync --delete-excluded"
     fi
 
@@ -196,7 +196,7 @@ $home_rsync \
     --exclude-from="$script_dir/home_rsync_excludes" \
     "$from_home_dir/" "$to_home_dir/"
 
-if (( $restore )); then
+if ((restore)); then
     echo 'Fixing some file modes...' 1>&2
     # Fix some user file modes.
     chmod -f 700 ~/.ssh
@@ -205,12 +205,12 @@ fi
 
 echo 'Syncing crontab' 1>&2
 
-if (( $restore )); then
+if ((restore)); then
     if [ -f "$dest_dir/home/$user/.crontab" ]; then
         # Restore crontab
         crontab "$dest_dir/home/$user/.crontab"
     fi
 else
     # Output crontab to the destination directory.
-    crontab -l > "$dest_dir/home/$user/.crontab"
+    crontab -l > "$dest_dir/home/$user/.crontab" || true
 fi
