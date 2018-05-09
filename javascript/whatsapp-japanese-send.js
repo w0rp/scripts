@@ -3,9 +3,13 @@
  * layouts which break WhatsApp, for some reason.
  */
 ;(() => {
+  let footer
+
   const keyListener = (event) => {
     if (event.code === 'Enter' && !event.ctrlKey) {
-      const button = document.getElementsByClassName('compose-btn-send')[0]
+      // The last button is the send button.
+      const buttonList = footer.getElementsByTagName('button')
+      const button = buttonList[buttonList.length - 1]
 
       if (button != null) {
         button.click()
@@ -14,11 +18,14 @@
   }
 
   const timer = setInterval(() => {
-    const textField = document.getElementsByClassName('input-container')[0]
+    // The footer contains the field for typing in.
+    const newFooter = document.getElementsByTagName('footer')[0]
 
-    if (textField != null) {
-      textField.removeEventListener('keydown', keyListener)
-      textField.addEventListener('keydown', keyListener)
+    if (newFooter != null) {
+      footer = newFooter
+
+      footer.removeEventListener('keydown', keyListener)
+      footer.addEventListener('keydown', keyListener)
     }
   }, 2000)
 })();
