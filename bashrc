@@ -31,6 +31,9 @@ set -o ignoreeof
 export HISTSIZE=10000
 export HISTFILESIZE=20000
 
+# Use Chromium for Karma tests.
+export CHROME_BIN=/usr/bin/chromium-browser
+
 shopt -s globstar
 
 # Set up the gpg agent.
