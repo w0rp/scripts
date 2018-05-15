@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set up some ls settings.
+alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
+
 # Aliases for typing git commands really quickly.
 # shellcheck disable=SC2139
 alias gd_=$'git diff -M -D'
