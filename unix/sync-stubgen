@@ -13,8 +13,16 @@ if [ -d out ]; then
     rmdir out
 fi
 
+# The sed expressions will...
+#
+# Automatically remove site-packages directories from paths.
+# Remove :: method syntax from paths.
+# Remove .py files from the ends of paths.
+# Turn slashes into dots for module paths.
+corrected_path=$(echo "$1" | sed 's/^.*site-packages\///' | sed 's/::.*$//' | sed 's/\.py$//' | sed 's:/:.:g')
+
 mkdir out
-stubgen "$@"
+stubgen "$corrected_path"
 
 rsync -auv out/ stubs/
 rm -r out
