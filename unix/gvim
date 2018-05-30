@@ -13,7 +13,8 @@ fi
 
 function open-file() {
     local file
-    file="$1"
+    # Turn foo.py::Klass::method into foo.py automatically.
+    file="${1%%::*}"
     local dir
     dir="$(dirname -- "$file")"
 
