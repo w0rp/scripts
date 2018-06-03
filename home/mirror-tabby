@@ -1,0 +1,74 @@
+#!/bin/bash -eu
+
+options=''
+no_root_option=''
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    --delete)
+        options="$options --delete"
+        shift
+    ;;
+    -v)
+        options="$options -v"
+        shift
+    ;;
+    --no-root)
+        no_root_option='--no-root'
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+if ! ssh -q tabby 'exit'; then
+    echo 'tabby cannot be reached!' 1>&2
+    exit 1
+fi
+
+mkdir -p ~/.backup/
+
+echo 'Backing up Tabby...' 1>&2
+
+# shellcheck disable=SC2086
+# Run the backup script on Tabby, back to this machine.
+ssh -t tabby ~/script/linux/backup-system $options $no_root_option /desktop-content/.tabby-backup/
+
+echo 'rsyncing tabby /content' 1>&2
+
+# shellcheck disable=SC2086
+rsync -au --info=flist0,stats0 $options \
+    --include='/audio/' \
+    --include='/audio/music/' \
+    --include='/audio/music/**' \
+    --include='/video/' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --exclude='*' \
+    tabby:~/content/ /content/
+
+# Use rsync to find differences by using a verbose dry run.
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --include='/audio/' \
+    --include='/audio/music/' \
+    --include='/audio/music/**' \
+    --include='/video/' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --exclude='*' \
+    /content/ tabby:~/content/ > ~/.backup/tabby_missing
+
+if [ -s "$HOME/.backup/tabby_missing" ]; then
+    echo "Some files have been removed from Tabby." 1>&2
+    echo "Check ~/.backup/tabby_missing" 1>&2
+fi

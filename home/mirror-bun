@@ -1,0 +1,133 @@
+#!/bin/bash -eu
+
+user=$(whoami)
+first_disk='BUN5'
+second_disk='BUN6'
+first_dir="/media/$user/$first_disk/"
+second_dir="/media/$user/$second_disk/"
+options=''
+no_root_option=''
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    --delete)
+        options="$options --delete"
+        shift
+    ;;
+    -v)
+        options="$options -v"
+        shift
+    ;;
+    --no-root)
+        no_root_option='--no-root'
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+if [ ! -d "$first_dir" ]; then
+    echo "$first_disk is not mounted!" 1>&2
+    exit 1
+fi
+
+if [ ! -d "$second_dir" ]; then
+    echo "$second_disk is not mounted!" 1>&2
+    exit 1
+fi
+
+mkdir -p ~/.backup/
+
+echo 'Backing up system and settings...' 1>&2
+
+# Back up the system to the first disk.
+# shellcheck disable=SC2086
+~/script/linux/backup-system $options $no_root_option "$first_dir/desktop/"
+
+echo "Backing up /content to $first_disk" 1>&2
+
+# shellcheck disable=SC2086
+rsync -au $options \
+    --include='/audio/' \
+    --include='/audio/**' \
+    --include='/image/' \
+    --include='/image/**' \
+    --include='/random/' \
+    --include='/random/**' \
+    --include='/video/' \
+    --include='/video/internet/' \
+    --include='/video/internet/**' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --include='/video/quality_webms/' \
+    --include='/video/quality_webms/**' \
+    --exclude='*' \
+    /content/ "$first_dir/content/"
+
+echo "Mirroring $first_disk to $second_disk..." 1>&2
+
+# Mirror everything from the first disk to the second.
+# shellcheck disable=SC2086
+rsync -au $options \
+    --include='/content/' \
+    --include='/content/**' \
+    --include='/desktop/' \
+    --include='/desktop/**' \
+    --exclude='*' \
+    "$first_dir/" "$second_dir/"
+
+# Use rsync to find differences by using a verbose dry run.
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --exclude-from="$HOME/script/home_rsync_excludes" \
+    --exclude-from="$HOME/.rsync_excludes" \
+    "$first_dir/desktop/home/$user/" ~/ > ~/.backup/home_missing
+
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --include='/audio/' \
+    --include='/audio/**' \
+    --include='/image/' \
+    --include='/image/**' \
+    --include='/random/' \
+    --include='/random/**' \
+    --include='/video/' \
+    --include='/video/internet/' \
+    --include='/video/internet/**' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --include='/video/quality_webms/' \
+    --include='/video/quality_webms/**' \
+    --exclude='*' \
+    "$first_dir/content/" /content/ > ~/.backup/content_missing
+
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --include='/content/' \
+    --include='/content/**' \
+    --include='/desktop/' \
+    --include='/desktop/**' \
+    --exclude='*' \
+    "$second_dir/" "$first_dir/" > "$HOME/.backup/${second_disk}_missing"
+
+if [ -s "$HOME/.backup/home_missing" ]; then
+    echo "Some files have been removed from the home directory." 1>&2
+    echo "Check ~/.backup/home_missing" 1>&2
+fi
+
+if [ -s "$HOME/.backup/content_missing" ]; then
+    echo "Some files have been removed from the content directory." 1>&2
+    echo "Check ~/.backup/content_missing" 1>&2
+fi
+
+if [ -s "$HOME/.backup/${second_disk}_missing" ]; then
+    echo "Some files have been removed from $first_disk." 1>&2
+    echo "Check ~/.backup/${second_disk}_missing" 1>&2
+fi
