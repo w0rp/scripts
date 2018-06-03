@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# Require gitlint for validating commits
+if ! command -v gitlint > /dev/null; then
+    echo 'You must install gitlint: sudo pip install gitlint' 1>&2
+    exit 1
+fi
+
+if [ $# -ne 0 ] && [ "$1" ]; then
+    if ! echo "$1" | gitlint --ignore B6; then
+        echo '' 1>&2
+        echo 'Fix the gitlint errors above.' 1>&2
+        exit 1
+    fi
+
+    git commit -m "$1"
+else
+    git commit
+fi

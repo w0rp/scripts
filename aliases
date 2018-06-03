@@ -13,7 +13,6 @@ alias justdoit='git add -A :/ && gd'
 alias gf='git fetch --all --prune'
 alias amend='git commit --amend --no-edit'
 alias st='git status'
-alias com='git commit -m'
 alias gco='git checkout'
 alias gls='git ls-tree -r --name-only'
 # Creating quick ZIPs for git repos.
