@@ -21,3 +21,6 @@ git config --global diff.algorithm patience
 
 # Make git use Vim for commit messages, etc.
 git config --global core.editor vim
+
+# Disable `git gui` warnings for loose objects.
+git config --global gui.gcwarning false
