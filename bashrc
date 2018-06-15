@@ -34,6 +34,9 @@ export HISTFILESIZE=20000
 # Use Chromium for Karma tests.
 export CHROME_BIN=/usr/bin/chromium-browser
 
+# Give Node more RAM
+export NODE_OPTIONS="--max_old_space_size=4096"
+
 shopt -s globstar
 
 # Set up the gpg agent.
