@@ -63,7 +63,7 @@ if [ -n "$base_virtual_env_dir" ] ; then
     export PS1
 
     # Detect Django settings modules, and use them.
-    if [ -d spotlight.settings.w0rp ]; then
+    if [ -f spotlight/settings/w0rp.py ]; then
         _OLD_VIRTUAL_DJANGO_SETTINGS_MODULE="$DJANGO_SETTINGS_MODULE"
         DJANGO_SETTINGS_MODULE="spotlight.settings.w0rp"
         export DJANGO_SETTINGS_MODULE
