@@ -24,6 +24,11 @@ function open-file() {
     FILE_OPENED=1
 }
 
+# Change the GTK theme to fix a KDE Neon balloon bug.
+if [ -d /usr/share/themes/Breeze-Dark/ ]; then
+    export GTK_THEME=Breeze-Dark
+fi
+
 if ! [ -t 0 ]; then
     # If we are piping lines into this script, then open them with gvim.
     while read -r; do
