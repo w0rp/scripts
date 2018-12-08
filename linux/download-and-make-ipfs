@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# Download go from the site: https://golang.org/dl/
+# Put it in HOME in a directory like ~/go-1.11
+# Add the paths to bashrc:
+#
+# export PATH="$PATH:$HOME/go-1.11/bin"
+
+go get -u -d github.com/ipfs/go-ipfs
+cd ~/go/src/github.com/ipfs/go-ipfs/
+make install
+
+# Add it to PATH
+export PATH="$PATH:$HOME/go/src/github.com/ipfs/go-ipfs/cmd/ipfs"
