@@ -1,0 +1,143 @@
+#!/bin/bash
+
+# This script implements backing files up to Google Drive.
+# The variables below can be modified to fit your settings.
+
+# Run this script with a passphrase.
+# export PASSPHRASE='...'
+
+# Run it in crontab for nightly backups, say at 05:00.
+# 0 5 * * * ~/script/home/drive-backup
+
+set -e
+
+# shellcheck disable=2128
+if [ -z "${BASH_VERSINFO}" ] \
+|| [ -z "${BASH_VERSINFO[0]}" ] \
+|| [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo 'This script requires Bash version 4 or above' 1>&2
+    exit 1
+fi
+
+restore=0
+restore_directory=''
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    --restore)
+        restore=1
+        shift
+
+        if [ $# -eq 0 ]; then
+            echo 'An argument for a directory name is required.' 1>&2
+            exit 1
+        fi
+
+        restore_directory="$1"
+        shift
+
+        if ! [ -d "$restore_directory" ]; then
+            echo "$restore_directory does not exist!" 1>&2
+            exit 1
+        fi
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+# The account name to back files up to.
+account='devw0rp@gmail.com'
+# The remote directory to save the backups to.
+dir='tabby-backup'
+# Change this variable to set the number of months between full backups.
+# e.g. 6 months means two full backups a year.
+months_between_full_backups=6
+# The total number of full backups to keep, as in the last n backups.
+full_backups_to_keep=4
+# The total number of incremental backups to keep.
+incremental_backups_to_keep=2
+# Set this variable to set how much storage space is allowed in bytes.
+# You can use something like `numfmt 1T --from=iec` for 1TB.
+available_storage_space=1099511627776
+include_paths=(
+    "$HOME/phone_backup"
+    "$HOME/personal"
+)
+
+if [ "${#include_paths[@]}" -lt 1 ]; then
+    echo 'You must set at least 1 include path' 1>&2
+    exit 1
+fi
+
+export GOOGLE_DRIVE_SETTINGS="$HOME/.duplicity/gdrive"
+
+if ! [ -f "$GOOGLE_DRIVE_SETTINGS" ]; then
+    echo "Create an API key, and store it in $GOOGLE_DRIVE_SETTINGS" 1>&2
+    echo 'See here: https://blog.xmatthias.com/duplicity-google-drive/' 1>&2
+    exit 1
+fi
+
+cd "$HOME/.duplicity"
+
+remote_path="gdocs://$account/$dir"
+
+if ((restore)); then
+    # Restore backups.
+    duplicity restore "$remote_path" "$restore_directory"
+else
+    # Get the size of all directories to back up combined.
+    total_size="$(du -cs "${include_paths[@]}" | tail -1 | cut -f1)"
+    # Work out the maximum space required for redundant backups.
+    redundant_size=$((
+        total_size * full_backups_to_keep
+        + total_size * incremental_backups_to_keep
+    ))
+
+    if [ "$redundant_size" -gt "$available_storage_space" ]; then
+        echo 'The backups will not fit in the available space!' 1>&2
+        echo 'Reduce the number of previous backups that are kept.' 1>&2
+        exit 1
+    fi
+
+    # Build the paths to include into --include arguments.
+    include_args=()
+
+    for path in "${include_paths[@]}"; do
+        include_args+=(--include "$path")
+    done
+
+    # The volume size of 700MB used for incremental backups is small enough to
+    # fit on CD-ROMs, and fits on fat32 partitions.
+    duplicity incr \
+        --verbosity warning \
+        --no-print-statistics \
+        --full-if-older-than "${months_between_full_backups}M" \
+        --volsize 700 \
+        --asynchronous-upload \
+        --exclude-device-files \
+        --exclude-other-filesystems \
+        / \
+        "${include_args[@]}" \
+        --exclude '*' \
+        "$remote_path"
+    duplicity remove-all-but-n-full \
+        --verbosity warning \
+        --no-print-statistics \
+        "$full_backups_to_keep" \
+        "$remote_path"
+    duplicity remove-all-inc-of-but-n-full \
+        --verbosity warning \
+        --no-print-statistics \
+        "$incremental_backups_to_keep" \
+        "$remote_path"
+fi
