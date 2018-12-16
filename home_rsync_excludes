@@ -1,5 +1,6 @@
 .*.jpg.*
 .*.png.*
+.Trash-1000
 .directory
 .lock
 .sock
@@ -12,6 +13,9 @@
 /.android/cache
 /.backup
 /.cache
+/.config/google-chrome*/**.ldb
+/.config/google-chrome*/**.log
+/.config/google-chrome*/**.sth
 /.config/google-chrome*/BrowserMetrics-active.pma
 /.config/google-chrome*/CertificateTransparency
 /.config/google-chrome*/Default/Application Cache
@@ -28,9 +32,6 @@
 /.config/google-chrome*/Default/databases
 /.config/google-chrome*/PepperFlash
 /.config/google-chrome*/Singleton*
-/.config/google-chrome*/**.ldb
-/.config/google-chrome*/**.log
-/.config/google-chrome*/**.sth
 /.config/gthumb/active_filter.xml
 /.config/gthumb/history.xbel
 /.config/hexchat/logs/
@@ -93,4 +94,13 @@ ShaderCache
 Subresource Filter
 Temporary Internet Files
 Thumbs.db
+__pycache__
+chromium/CertificateRevocation
+chromium/CertificateTransparency
+chromium/chrome_shutdown_ms.txt
+discord/Cache
+node_modules
+site-packages
 ui/.cache/
+ve/bin/pyls
+ve/bin/wheel

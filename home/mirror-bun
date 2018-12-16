@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 
 user=$(whoami)
-first_disk='BUN5'
-second_disk='BUN6'
+first_disk='BUN7'
+second_disk='BUN8'
 first_dir="/media/$user/$first_disk/"
 second_dir="/media/$user/$second_disk/"
 options=''
