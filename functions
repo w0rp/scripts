@@ -128,3 +128,17 @@ download_adfs_xml() {
 add-github-remote() {
     git remote add "$1" "git@github.com:${1}$(git remote -v | grep -o '/.*\.git' | uniq)"
 }
+
+# A function for killing processes with confirmation.
+killit() {
+    if pgrep -af "$1"; then
+        echo
+        read -p 'Kill these processes? (y/N): ' -r
+
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            pkill -f "$1"
+        fi
+    else
+        echo 'No processes found.'
+    fi
+}
