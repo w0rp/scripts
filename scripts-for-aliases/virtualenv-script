@@ -69,9 +69,9 @@ if [ -n "$base_virtual_env_dir" ] ; then
         export DJANGO_SETTINGS_MODULE
     fi
 
-    if [ -f api_proj/settings/w0rp.py ]; then
+    if [ -f api_proj/settings/dev.py ]; then
         _OLD_VIRTUAL_DJANGO_SETTINGS_MODULE="$DJANGO_SETTINGS_MODULE"
-        DJANGO_SETTINGS_MODULE="api_proj.settings.w0rp"
+        DJANGO_SETTINGS_MODULE="spotlight.settings.w0rp_api"
         export DJANGO_SETTINGS_MODULE
     fi
 else
