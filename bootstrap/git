@@ -27,6 +27,8 @@ git config --global gui.gcwarning false
 
 # Set settings for diff-so-fancy
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --bool --global diff-so-fancy.markEmptyLines false
+git config --bool --global diff-so-fancy.stripLeadingSymbols false
 git config --global color.ui true
 
 git config --global color.diff-highlight.oldNormal    "red bold"
