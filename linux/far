@@ -29,15 +29,11 @@ fi
 regex="$(escape-slashes "$1")"
 sub="$(escape-slashes "$2")"
 
-# Invoke sed first on an empty string to test the expression.
-# sed will print information on the syntax errors
-echo '' | sed $r "s/$regex/$sub/g" > /dev/null
-
-if (( $? )); then
-    # There was a syntax error, so stop here.
+# Do not run find if the regular expression is invalid.
+if ! echo '' | sed $r "s/$regex/$sub/g" &> /dev/null; then
+    echo 'Invalid regular expression' 1>&2
     exit 1
 fi
 
 # Find every file in the tail argument directories, etc and replace shit.
 find "${@:3}" -type f -exec sed $r "s/$regex/$sub/g" -i {} \;
-
