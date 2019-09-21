@@ -71,6 +71,8 @@ rsync -au $options \
     --include='/video/youtube/**' \
     --include='/video/quality_webms/' \
     --include='/video/quality_webms/**' \
+    --include='/.tabby-backup/' \
+    --include='/.tabby-backup/**' \
     --exclude='*' \
     /content/ "$first_dir/content/"
 
@@ -106,6 +108,8 @@ rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
     --include='/video/youtube/**' \
     --include='/video/quality_webms/' \
     --include='/video/quality_webms/**' \
+    --include='/.tabby-backup/' \
+    --include='/.tabby-backup/**' \
     --exclude='*' \
     "$first_dir/content/" /content/ > ~/.backup/content_missing
 
