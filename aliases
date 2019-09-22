@@ -3,6 +3,8 @@
 # Set up some ls settings.
 alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
 
+# Open files easily with o
+alias o='xdg-open'
 # Aliases for typing git commands really quickly.
 # shellcheck disable=SC2139
 alias gd_=$'git diff -M -D'
