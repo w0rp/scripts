@@ -86,6 +86,11 @@ validate_transcoding_filenames() {
     fi
 }
 
+# Download an MP3 from YouTube, or other sources.
+download-mp3() {
+    youtube-dl --extract-audio --audio-format mp3 "$1"
+}
+
 to_x264_1080p_aac_192k() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" \
