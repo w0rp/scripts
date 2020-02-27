@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# This script is merely an alias for `xclip`, always using the clipboard.
+
+set -eu
+
+exec /usr/bin/env xclip -selection clipboard
