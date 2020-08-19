@@ -24,6 +24,8 @@ alias git-zip='git archive --format zip "$(git rev-parse HEAD)" --output'
 # My custom command for deleting everything.
 alias gw='git-wipeout'
 alias gsquash='git merge --ff --squash'
+# Show an overview of stuff in the git log, with just the right amount of information
+alias git-overview='git log --decorate --graph --first-parent --branches --oneline'
 # shellcheck disable=SC2139
 alias nopyc=$'find `git rev-parse --show-toplevel` -name \'*.pyc\' -not -path \'*/site-packages/*\' -delete'
 # shellcheck disable=SC2139
