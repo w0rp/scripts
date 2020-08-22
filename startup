@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Enable Ctrl+V for pasting into the Gnome terminal
 gconftool-2 --type string --set /apps/gnome-terminal/keybindings/paste '<Ctrl>v'
