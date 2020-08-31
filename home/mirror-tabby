@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+
+set -eu
 
 options=''
 no_root_option=''
@@ -11,6 +13,10 @@ while [ $# -ne 0 ]; do
     ;;
     -v)
         options="$options -v"
+        shift
+    ;;
+    --bwlimit=*)
+        options="$options $1"
         shift
     ;;
     --no-root)
@@ -38,11 +44,20 @@ fi
 
 mkdir -p ~/.backup/
 
-echo 'Backing up Tabby...' 1>&2
+# Set up tabby to mount desktop directories.
+ssh tabby 'ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/home/w0rp/ /desktop/); ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop-content &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/content /desktop-content/)'
+
+echo 'Backing up Tabby ...' 1>&2
 
 # shellcheck disable=SC2086
 # Run the backup script on Tabby, back to this machine.
 ssh -t tabby ~/script/linux/backup-system $options $no_root_option /desktop-content/.tabby-backup/
+
+echo 'rsyncing tabby ~/phone_backup/DCIM' 1>&2
+
+# shellcheck disable=SC2086
+rsync -au --info=flist0,stats0 $options \
+    tabby:~/phone_backup/DCIM/ /content/image/DCIM/
 
 echo 'rsyncing tabby /content' 1>&2
 
@@ -59,6 +74,10 @@ rsync -au --info=flist0,stats0 $options \
 
 # Use rsync to find differences by using a verbose dry run.
 rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    /content/image/DCIM/ tabby:~/phone_backup/DCIM/ \
+    > ~/.backup/tabby_dcim_missing
+
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
     --include='/audio/' \
     --include='/audio/music/' \
     --include='/audio/music/**' \
@@ -67,6 +86,11 @@ rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
     --include='/video/youtube/**' \
     --exclude='*' \
     /content/ tabby:~/content/ > ~/.backup/tabby_missing
+
+if [ -s "$HOME/.backup/tabby_dcim_missing" ]; then
+    echo "Some files have been removed from DCIM." 1>&2
+    echo "Check ~/.backup/tabby_dcim_missing" 1>&2
+fi
 
 if [ -s "$HOME/.backup/tabby_missing" ]; then
     echo "Some files have been removed from Tabby." 1>&2
