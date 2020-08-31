@@ -23,5 +23,8 @@ find "${files[@]}" -type f \
         -o -iname '*.aac' \
         -o -iname '*.sid' \
         -o -iname '*.spc' \
+        -o -iname '*.ogg' \
+        -o -iname '*.xm' \
+        -o -iname '*.mod' \
     \) \
     | sort -V
