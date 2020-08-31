@@ -4,6 +4,7 @@ set -eu
 
 options=''
 no_root_option=''
+no_system_backup=0
 
 while [ $# -ne 0 ]; do
     case $1 in
@@ -21,6 +22,10 @@ while [ $# -ne 0 ]; do
     ;;
     --no-root)
         no_root_option='--no-root'
+        shift
+    ;;
+    --no-system-backup)
+        no_system_backup=1
         shift
     ;;
     --)
@@ -44,14 +49,17 @@ fi
 
 mkdir -p ~/.backup/
 
-# Set up tabby to mount desktop directories.
-ssh tabby 'ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/home/w0rp/ /desktop/); ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop-content &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/content /desktop-content/)'
+if ! ((no_system_backup)); then
+    # Set up tabby to mount desktop directories.
+    ssh tabby 'ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/home/w0rp/ /desktop/); ping -c1 -W1 desktop &>/dev/null && (mountpoint /desktop-content &>/dev/null || sshfs -o allow_root,reconnect,ServerAliveInterval=5,ServerAliveCountMax=3 desktop:/content /desktop-content/)'
 
-echo 'Backing up Tabby ...' 1>&2
+    echo 'Backing up Tabby ...' 1>&2
 
-# shellcheck disable=SC2086
-# Run the backup script on Tabby, back to this machine.
-ssh -t tabby ~/script/linux/backup-system $options $no_root_option /desktop-content/.tabby-backup/
+    # shellcheck disable=SC2086
+    # Run the backup script on Tabby, back to this machine.
+    ssh -t tabby ~/script/linux/backup-system $options $no_root_option \
+        /desktop-content/.tabby-backup/
+fi
 
 echo 'rsyncing tabby ~/phone_backup/DCIM' 1>&2
 
