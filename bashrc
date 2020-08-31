@@ -2,11 +2,16 @@
 
 # A common 'main' script file to include across multiple machines.
 
+# shellcheck disable=SC1090
 . ~/script/aliases
+# shellcheck disable=SC1090
 . ~/script/functions
+# shellcheck disable=SC1090
 . ~/script/completion/rules
 
-PS1='\W$ '
+if ! ((KEEP_PS1)); then
+    PS1='\W$ '
+fi
 
 export PATH="$PATH:$HOME/bin"
 # Scripts which should work on any Unix flavour.
