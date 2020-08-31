@@ -33,6 +33,10 @@ while [ $# -ne 0 ]; do
         rsync="$rsync -v"
         shift
     ;;
+    --bwlimit=*)
+        rsync="$rsync $1"
+        shift
+    ;;
     --)
         shift
         break
@@ -94,7 +98,8 @@ root_actions() {
         if [ -f "$dest_dir/apt-packages" ]; then
             # Install the list of apt packages.
             apt-get update
-            apt-get install --force-yes -y $(cat "$dest_dir/apt-packages" | tr "\n" ' ')
+            # shellcheck disable=SC2002
+            apt-get install --force-yes -y "$(cat "$dest_dir/apt-packages" | tr "\n" ' ')"
         fi
 
         # Install rsync if needed when restoring files.
