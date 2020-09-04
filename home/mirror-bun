@@ -8,6 +8,8 @@ second_disk='BUN8'
 first_dir="/media/$user/$first_disk/"
 second_dir="/media/$user/$second_disk/"
 options=''
+verbose=''
+bwlimit=''
 no_root_option=''
 
 while [ $# -ne 0 ]; do
@@ -18,6 +20,11 @@ while [ $# -ne 0 ]; do
     ;;
     -v)
         options="$options -v"
+        verbose='-v'
+        shift
+    ;;
+    --bwlimit=*)
+        bwlimit="$1"
         shift
     ;;
     --no-root)
@@ -78,6 +85,16 @@ rsync -au $options \
     --exclude='*' \
     /content/ "$first_dir/content/"
 
+echo "Backing up Tabby /content to $first_disk" 1>&2
+
+# shellcheck disable=SC2086
+rsync -au $verbose $bwlimit \
+    --include='/video/' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --exclude='*' \
+    tabby:/content/ "$first_dir/content/"
+
 echo "Mirroring $first_disk to $second_disk..." 1>&2
 
 # Mirror everything from the first disk to the second.
@@ -89,6 +106,8 @@ rsync -au $options \
     --include='/desktop/**' \
     --exclude='*' \
     "$first_dir/" "$second_dir/"
+
+echo "Checking for missing files..." 1>&2
 
 # Use rsync to find differences by using a verbose dry run.
 rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
