@@ -16,6 +16,7 @@ __git_complete make-pr _git_checkout
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
+__git_complete spotlight/scripts/i18n/add-strings-from-other-branch.sh _git_checkout
 
 # Don't enable these rules on Mac, as the completion scripts aren't there.
 if ! [[ "$OSTYPE" =~ ^darwin ]]; then
