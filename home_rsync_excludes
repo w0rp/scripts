@@ -13,6 +13,27 @@
 /.android/cache
 /.backup
 /.cache
+/.config/BraveSoftware/Brave-Browser/Default/*.log
+/.config/BraveSoftware/Brave-Browser/Default/Cookies
+/.config/BraveSoftware/Brave-Browser/Default/Cookies-journal
+/.config/BraveSoftware/Brave-Browser/Default/GPUCache
+/.config/BraveSoftware/Brave-Browser/Default/IndexedDB
+/.config/BraveSoftware/Brave-Browser/Default/Local Storage
+/.config/BraveSoftware/Brave-Browser/Default/Network Persistent State
+/.config/BraveSoftware/Brave-Browser/Default/QuotaManager
+/.config/BraveSoftware/Brave-Browser/Default/QuotaManager-journal
+/.config/BraveSoftware/Brave-Browser/Default/Service Worker
+/.config/BraveSoftware/Brave-Browser/Default/Session Storage
+/.config/BraveSoftware/Brave-Browser/GrShaderCache
+/.config/BraveSoftware/Brave-Browser/Local State
+/.config/BraveSoftware/Brave-Browser/Safe Browsing
+/.config/discord/Cookies
+/.config/discord/Cache
+/.config/discord/Cookies-journal
+/.config/discord/GPUCache
+/.config/discord/Local Storage
+/.config/discord/Network Persistent State
+/.config/discord/Session Storage
 /.config/google-chrome*/**.ldb
 /.config/google-chrome*/**.log
 /.config/google-chrome*/**.sth
@@ -37,6 +58,8 @@
 /.config/hexchat/logs/
 /.config/hexchat/scrollback/
 /.config/hexchat/url.log
+/.config/transmission/resume
+/.config/transmission/stats.json
 /.crontab
 /.dbus
 /.gksu.lock
@@ -49,9 +72,11 @@
 /.kde/share/apps/gwenview/recenturls/
 /.kde/share/apps/kfileplaces/bookmarks.xml*
 /.kde/share/apps/okular/docdata/
+/.local/share/RecentDocuments/
 /.local/share/Steam/
 /.local/share/Trash/
 /.local/share/baloo/
+/.local/share/klipper/
 /.macromedia
 /.mozilla/firefox/*/SDThumbs/
 /.mozilla/firefox/*/SiteSecurityServiceState.txt
@@ -98,7 +123,6 @@ __pycache__
 chromium/CertificateRevocation
 chromium/CertificateTransparency
 chromium/chrome_shutdown_ms.txt
-discord/Cache
 node_modules
 site-packages
 ui/.cache/
