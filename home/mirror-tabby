@@ -2,6 +2,11 @@
 
 set -eu
 
+if [ "$(hostname)" = 'tabby' ]; then
+    echo 'Never run this script on Tabby!' 1>&2
+    exit 1
+fi
+
 options=''
 no_root_option=''
 no_system_backup=0
@@ -74,9 +79,6 @@ rsync -au --info=flist0,stats0 $options \
     --include='/audio/' \
     --include='/audio/music/' \
     --include='/audio/music/**' \
-    --include='/video/' \
-    --include='/video/youtube/' \
-    --include='/video/youtube/**' \
     --exclude='*' \
     tabby:~/content/ /content/
 
@@ -89,9 +91,6 @@ rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
     --include='/audio/' \
     --include='/audio/music/' \
     --include='/audio/music/**' \
-    --include='/video/' \
-    --include='/video/youtube/' \
-    --include='/video/youtube/**' \
     --exclude='*' \
     /content/ tabby:~/content/ > ~/.backup/tabby_missing
 

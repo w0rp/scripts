@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -eu
+
+if [ "$(hostname)" != 'tabby' ]; then
+    echo 'Only run this script on Tabby!' 1>&2
+    exit 1
+fi
+
+first_disk='bun7'
+first_dir="/mnt/$first_disk/"
+options=''
+verbose=''
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    --delete)
+        options="$options --delete"
+        shift
+    ;;
+    -v)
+        options="$options -v"
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+if [ ! -d "$first_dir" ]; then
+    echo "$first_disk is not mounted!" 1>&2
+    exit 1
+fi
+
+mkdir -p ~/.backup/
+
+echo "Backing up Tabby /content to $first_disk" 1>&2
+
+# shellcheck disable=SC2086
+rsync -au $verbose $options \
+    --include='/video/' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --exclude='*' \
+    ~/content/ "$first_dir/content/"
+
+echo "Checking for missing files..." 1>&2
+
+rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --include='/video/' \
+    --include='/video/youtube/' \
+    --include='/video/youtube/**' \
+    --exclude='*' \
+    "$first_dir/content/" /content/ > ~/.backup/content_missing
+
+if [ -s "$HOME/.backup/content_missing" ]; then
+    echo "Some files have been removed from the content directory." 1>&2
+    echo "Check ~/.backup/content_missing" 1>&2
+fi

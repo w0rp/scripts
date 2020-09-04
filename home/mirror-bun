@@ -2,14 +2,17 @@
 
 set -eu
 
+if [ "$(hostname)" = 'tabby' ]; then
+    echo 'Never run this script on Tabby!' 1>&2
+    exit 1
+fi
+
 user=$(whoami)
 first_disk='BUN7'
 second_disk='BUN8'
 first_dir="/media/$user/$first_disk/"
 second_dir="/media/$user/$second_disk/"
 options=''
-verbose=''
-bwlimit=''
 no_root_option=''
 
 while [ $# -ne 0 ]; do
@@ -20,11 +23,6 @@ while [ $# -ne 0 ]; do
     ;;
     -v)
         options="$options -v"
-        verbose='-v'
-        shift
-    ;;
-    --bwlimit=*)
-        bwlimit="$1"
         shift
     ;;
     --no-root)
@@ -85,16 +83,6 @@ rsync -au $options \
     --exclude='*' \
     /content/ "$first_dir/content/"
 
-echo "Backing up Tabby /content to $first_disk" 1>&2
-
-# shellcheck disable=SC2086
-rsync -au $verbose $bwlimit \
-    --include='/video/' \
-    --include='/video/youtube/' \
-    --include='/video/youtube/**' \
-    --exclude='*' \
-    tabby:/content/ "$first_dir/content/"
-
 echo "Mirroring $first_disk to $second_disk..." 1>&2
 
 # Mirror everything from the first disk to the second.
@@ -125,8 +113,6 @@ rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
     --include='/video/' \
     --include='/video/internet/' \
     --include='/video/internet/**' \
-    --include='/video/youtube/' \
-    --include='/video/youtube/**' \
     --include='/video/quality_webms/' \
     --include='/video/quality_webms/**' \
     --include='/.tabby-backup/' \
