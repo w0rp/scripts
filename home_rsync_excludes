@@ -13,6 +13,9 @@
 /.android/cache
 /.backup
 /.cache
+/.config/BraveSoftware/Brave-Browser/BrowserMetrics
+/.config/BraveSoftware/Brave-Browser/BrowserMetrics-spare.pma
+/.config/BraveSoftware/Brave-Browser/CertificateRevocation
 /.config/BraveSoftware/Brave-Browser/Default/*.log
 /.config/BraveSoftware/Brave-Browser/Default/Cookies
 /.config/BraveSoftware/Brave-Browser/Default/Cookies-journal
@@ -27,8 +30,8 @@
 /.config/BraveSoftware/Brave-Browser/GrShaderCache
 /.config/BraveSoftware/Brave-Browser/Local State
 /.config/BraveSoftware/Brave-Browser/Safe Browsing
-/.config/discord/Cookies
 /.config/discord/Cache
+/.config/discord/Cookies
 /.config/discord/Cookies-journal
 /.config/discord/GPUCache
 /.config/discord/Local Storage
