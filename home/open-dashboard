@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# This script opens a private dashboard file with Chromium
+
+set -eu
+
+mkdir -p "$HOME/.config/chromium/nosecure-data"
+
+chromium-browser --disable-web-security \
+    --user-data-dir="$HOME/.config/chromium/nosecure-data" \
+    --profile-directory=NoWebSecurity \
+    --disable-features=IsolateOrigins,site-per-process \
+    ~/office/dashboard.htm
