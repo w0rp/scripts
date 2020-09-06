@@ -74,8 +74,6 @@ rsync -au $options \
     --include='/video/' \
     --include='/video/internet/' \
     --include='/video/internet/**' \
-    --include='/video/youtube/' \
-    --include='/video/youtube/**' \
     --include='/video/quality_webms/' \
     --include='/video/quality_webms/**' \
     --include='/.tabby-backup/' \
