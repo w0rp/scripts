@@ -169,7 +169,7 @@ if ((root_tasks)); then
     export user
 
     # Run the root backup commands.
-    su --shell /bin/bash -- -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
+    su root --shell /bin/bash -- -euc "$(declare -f service_exists); $(declare -f root_actions); root_actions"
 fi
 
 if ((restore)); then
