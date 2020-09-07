@@ -10,6 +10,10 @@ alias o='xdg-open'
 alias gd_=$'git diff -M -D'
 alias gd='gd_ --cached'
 alias ga='git add -A'
+# Make ag do nothing at all, so we accidentally run silversearcher.
+alias ag='true'
+# Add a new alias for silversearcher, so we can run it.
+alias silversearcher='/usr/bin/ag'
 alias gb='git branch'
 alias justdoit='git add -A :/ && gd'
 alias gf='git fetch --all --prune'
