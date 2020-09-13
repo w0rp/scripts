@@ -4,10 +4,10 @@
 
 set -eu
 
-mkdir -p "$HOME/.config/chromium/nosecure-data"
+mkdir -p "$HOME/.config/brave-nosecure"
 
-chromium-browser --disable-web-security \
-    --user-data-dir="$HOME/.config/chromium/nosecure-data" \
+brave-browser --disable-web-security \
+    --user-data-dir="$HOME/.config/brave-nosecure/data" \
     --profile-directory=NoWebSecurity \
     --disable-features=IsolateOrigins,site-per-process \
     ~/office/dashboard.htm
