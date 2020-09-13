@@ -1,0 +1,16 @@
+[Desktop Entry]
+Actions=new-window;new-private-window;
+Categories=Network;WebBrowser;
+Comment=View all the things
+Exec=/usr/bin/brave-browser-stable --disable-web-security --user-data-dir="$HOME/.config/brave-nosecure/data" --profile-directory=NoWebSecurity --disable-features=IsolateOrigins,site-per-process --class=w0rp-dashboard "$HOME/office/dashboard.htm"
+Icon=applications-internet
+Name=w0rp Dashboard
+NoDisplay=false
+Path[$e]=
+StartupNotify=true
+Terminal=0
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
