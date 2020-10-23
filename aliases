@@ -7,6 +7,7 @@ alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
 alias o='xdg-open'
 # Aliases for typing git commands really quickly.
 # shellcheck disable=SC2139
+alias gl='git log --first-parent'
 alias gd_=$'git diff -M -D'
 alias gd='gd_ --cached'
 alias ga='git add -A'
