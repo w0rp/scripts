@@ -91,6 +91,11 @@ download-mp3() {
     youtube-dl --extract-audio --audio-format mp3 "$1"
 }
 
+# Download an AAC file from YouTube, or other sources.
+download-aac() {
+    youtube-dl --extract-audio --audio-format aac "$1"
+}
+
 to_x264_1080p_aac_192k() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" \
