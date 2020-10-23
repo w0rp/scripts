@@ -6,11 +6,6 @@ gconftool-2 --type string --set /apps/gnome-terminal/keybindings/paste '<Ctrl>v'
 # Make Ctrl+Shift+C copy from terminals.
 gconftool-2 -s /apps/gnome-terminal/keybindings/copy -t str '<Ctrl><Shift>c'
 
-# Start expressvpn
-if command -v expressvpn > /dev/null; then
-    while ! expressvpn connect usny 2>&1 | grep -q connected; do sleep 2; done
-fi
-
 if command -v zeal > /dev/null; then
     nohup zeal > /dev/null 2>&1 &
 fi
