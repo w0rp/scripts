@@ -70,6 +70,8 @@ alias now-playing=$'xmms2 info | grep file:// | sed \'s/.*file:\\/\\///\''
 
 alias ve='source ~/script/scripts-for-aliases/virtualenv-script'
 
+alias pshell='~/script/python/start-shell'
+
 # aliases specific to Mac OSX.
 if [[ "$OSTYPE" =~ ^darwin ]]; then
     # Automatically use the MacVim version of Vim.

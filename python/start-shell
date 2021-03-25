@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")"
+
+set -e
+
+# Install the virtualenv only if ve isn't there.
+# The directory has to be deleted when requirements are updated.
+if ! [ -d ve ]; then
+    ./install
+fi
+
+source ve/bin/activate
+
+PYTHONSTARTUP=startup.py ipython --profile=w0rp-script-env --config=config

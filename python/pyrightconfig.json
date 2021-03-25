@@ -1,0 +1,13 @@
+{
+  "venvPath": "./",
+  "venv": "ve",
+  "pythonVersion": "3.10",
+  "exclude": [
+    "ve"
+  ],
+  "reportUnusedVariable": false,
+  "reportUnusedClass": false,
+  "reportUnusedFunction": false,
+  "reportUnusedImport": false,
+  "typeCheckingMode": "strict"
+}

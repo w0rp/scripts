@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")"
+
+set -e
+
+rm -rf ve
+python3.10 -m venv ve
+source ve/bin/activate
+pip install -q -r requirements.txt
