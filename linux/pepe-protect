@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Protect your rare Pepes
+#
+# This script watches for changes to a directory forever and moves files to
+# another directory, so you can download files to one place, and move them to
+# another place when the downloads are complete. Thus, your Pepes are protected.
+
+set -eu
+
+if [ $# != 2 ]; then
+    echo 'Usage: pepe-protect <from_directory> <to_directory>' 1>&2
+    exit 1
+fi
+
+from_directory="$1"
+to_directory="$2"
+
+# shellcheck disable=SC2034
+inotifywait -m -e close_write -e moved_to "$from_directory" |
+while read -r directory events filename; do
+    if [[ "$filename" != *.part ]] && [[ "$filename" != *.crdownload ]]; then
+        base_name="$(basename "$filename")"
+
+        from_name="$from_directory/$filename"
+        to_name="$to_directory/$base_name"
+
+        # Use a differnt filename if the current one is already used.
+        if [ -f "$to_name" ]; then
+            if ! cmp --silent "$from_name" "$to_name"; then
+                # If the two files are the same, remove the new one.
+                rm -f "$from_name"
+
+                continue
+            fi
+
+            to_name="$to_directory/${base_name%.*} ($(date "+%s")).${base_name##*.}"
+        fi
+
+        echo mv "$from_name" "$to_name"
+        mv "$from_name" "$to_name"
+    fi
+done
