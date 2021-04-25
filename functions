@@ -96,6 +96,14 @@ download-aac() {
     youtube-dl --extract-audio --audio-format aac "$1"
 }
 
+# Archive a YouTube video, preserving as much as possible.
+archive-youtube() {
+    youtube-dl -f 'bestvideo[ext!=webm]+bestaudio[ext!=webm]/best[ext!=webm]' \
+        --write-info-json --write-thumbnail --add-metadata \
+        "$1" \
+        -o "./%(uploader)s/%(title)s {%(id)s}.%(ext)s"
+}
+
 to_x264_1080p_aac_192k() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" \
@@ -114,6 +122,11 @@ to_x264_720p_aac_128k() {
         scale=-1:720 -threads 0 \
     -codec:a aac -b:a 128k -strict -2 \
     "$2"
+}
+
+to_mp4() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" -c:v h264_nvenc -c:a aac -crf 17 "$2"
 }
 
 to_wav() {
