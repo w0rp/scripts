@@ -73,6 +73,8 @@ alias ve='source ~/script/scripts-for-aliases/virtualenv-script'
 
 alias pshell='~/script/python/start-shell'
 
+alias get-rbs-password='~/script/python/rbs_password.py'
+
 # aliases specific to Mac OSX.
 if [[ "$OSTYPE" =~ ^darwin ]]; then
     # Automatically use the MacVim version of Vim.
