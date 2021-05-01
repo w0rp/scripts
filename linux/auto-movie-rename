@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Automatically rename movie files
+#
+# If you have backups of your movies, they can have weird filenames that
+# are hard for Jellyfin to understand. This script tries to automatically fix
+# them, hopefully without breaking things.
+
+set -eu
+
+if [ $# != 1 ]; then
+    echo 'Usage: auto-movie-rename <movie_directory>' 1>&2
+    exit 1
+fi
+
+movie_directory="$1"
+
+# shellcheck disable=SC2034
+inotifywait -m -e close_write -e moved_to "$movie_directory" |
+while read -r directory events filename; do
+    base_name="$(basename "$filename")"
+    ext=".${base_name##*.}"
+    pre_ext="${base_name%.*}"
+    old_pre_ext="$pre_ext"
+
+    if [[ "$ext" =~ \.(mp4|mkv|srt) ]]; then
+        echo hey "$pre_ext"
+
+        # If the filename has a year in it, and it isn't the format we want,
+        # then we should munge it.
+        if [[ "$pre_ext" =~ (19|20)[0-9]{2} ]] && ! [[ "$pre_ext" =~ \ \((19|20)[0-9]{2}\)$ ]]; then
+            # shellcheck disable=SC2001
+            pre_ext="$(echo "$pre_ext" | sed 's/\(19\|20\)\([0-9]\{2\}\)\.\(1080p\|720p\).*/(\1\2)/')"
+            # shellcheck disable=SC2001
+            pre_ext="$(echo "$pre_ext" | sed -E 's/ *\[(1080p|720p)[^]]*\] *$//')"
+            pre_ext="${pre_ext//\./ }"
+
+            # If we still don't have a year at the end of the filename, then
+            # force one to be there so we don't get in a loop.
+            if ! [[ "$pre_ext" =~ \ \((19|20)[0-9]{2}\)$ ]]; then
+                pre_ext="$pre_ext ($(echo "$old_pre_ext" | grep -o '\(19\|20\)[0-9]\{2\}'))"
+            fi
+
+            new_filename="$movie_directory/$pre_ext$ext"
+
+            # Move the file if and only if there isn't already a file or
+            # directory with the same name and if the filename will actually
+            # change.
+            if [ "$pre_ext" != "$old_pre_ext" ] && ! [ -e "$new_filename" ]; then
+                echo mv "$filename" "$new_filename"
+                mv "$filename" "$new_filename"
+            fi
+        fi
+    fi
+done
