@@ -37,3 +37,5 @@ bind 'TAB:menu-complete'
 # Shift+Tab should go backwards.
 # This has no effect on Mac OSX
 bind '"\e[Z":menu-complete-backward'
+# Bind Ctrl+Shift+Tab for Konsole too.
+bind '"\e[27;6;9~":menu-complete-backward'
