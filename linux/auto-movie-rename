@@ -15,6 +15,8 @@ fi
 
 movie_directory="$1"
 
+cd "$movie_directory"
+
 # shellcheck disable=SC2034
 inotifywait -m -e close_write -e moved_to "$movie_directory" |
 while read -r directory events filename; do
