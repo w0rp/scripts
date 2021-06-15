@@ -22,6 +22,16 @@ if ! [[ "$OSTYPE" =~ ^darwin ]]; then
     export PATH="$PATH:$HOME/script/linux"
 fi
 
+# Set up Go, if available
+if [ -d /usr/local/go ]; then
+    export PATH="$PATH:/usr/local/go/bin"
+
+    if command -v go &> /dev/null; then
+        GOPATH=$(go env GOPATH)
+        export GOPATH
+    fi
+fi
+
 # Add the .vim dir to PYTHONPATH for rope.
 export PYTHONPATH="$HOME/.vim:$PYTHONPATH"
 
