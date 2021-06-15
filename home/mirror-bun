@@ -59,7 +59,8 @@ echo 'Backing up system and settings...' 1>&2
 
 # Back up the system to the first disk.
 # shellcheck disable=SC2086
-~/script/linux/backup-system $options $no_root_option "$first_dir/desktop/"
+~/script/linux/backup-system --copy-dirlinks-for-home \
+    $options $no_root_option "$first_dir/desktop/"
 
 echo "Backing up /content to $first_disk" 1>&2
 
@@ -102,7 +103,7 @@ rsync -au $options \
 echo "Checking for missing files..." 1>&2
 
 # Use rsync to find differences by using a verbose dry run.
-rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+rsync --dry-run -v --info=flist0,stats0 -rL --ignore-existing \
     --exclude-from="$HOME/script/home_rsync_excludes" \
     --exclude-from="$HOME/.rsync_excludes" \
     "$first_dir/desktop/home/$user/" ~/ > ~/.backup/home_missing

@@ -12,6 +12,7 @@ service_exists() {
 restore=0
 delete=0
 root_tasks=1
+copy_dirlinks_for_home=0
 
 while [ $# -ne 0 ]; do
     case $1 in
@@ -35,6 +36,10 @@ while [ $# -ne 0 ]; do
     ;;
     --bwlimit=*)
         rsync="$rsync $1"
+        shift
+    ;;
+    --copy-dirlinks-for-home)
+        copy_dirlinks_for_home=1
         shift
     ;;
     --)
@@ -126,10 +131,19 @@ root_actions() {
         --include='/etc/ssmtp/*' \
         --include='/etc/network/' \
         --include='/etc/network/interfaces' \
+        --include='/usr/' \
+        --include='/usr/share/' \
+        --include='/usr/share/jellyfin/' \
+        --include='/usr/share/jellyfin/**' \
         --include='/var/' \
+        --include='/var/cache/' \
+        --include='/var/cache/jellyfin/' \
+        --include='/var/cache/jellyfin/**' \
         --include='/var/lib/' \
         --include='/var/lib/NetworkManager/' \
         --include='/var/lib/NetworkManager/**' \
+        --include='/var/lib/jellyfin/' \
+        --include='/var/lib/jellyfin/**' \
         --include='/content' \
         --exclude='*' \
         "$from_dir/" "$to_dir/"
@@ -188,6 +202,10 @@ else
     fi
 
     mkdir -p "$to_home_dir"
+fi
+
+if ((copy_dirlinks_for_home)); then
+    home_rsync="$home_rsync --copy-dirlinks"
 fi
 
 # Take additional excludes from the home directory, if available.
