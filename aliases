@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Set up some ls settings.
-alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias ls='ls -ph'
+else
+    alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
+fi
 
 # Open files easily with o
 alias o='xdg-open'
