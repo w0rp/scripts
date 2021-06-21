@@ -4,6 +4,9 @@
 git config --global user.name w0rp
 git config --global user.email devw0rp@gmail.com
 
+# Continue using master as the default branch name. People are silly.
+git config --global init.defaultBranch master
+
 # Let git figure out branch names for push by default.
 git config --global push.default current
 
