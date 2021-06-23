@@ -18,8 +18,14 @@ alias ga='git add -A'
 alias gbs='git branch-select'
 # Make ag do nothing at all, so we accidentally run silversearcher.
 alias ag='true'
+
 # Add a new alias for silversearcher, so we can run it.
-alias silversearcher='/usr/bin/ag'
+if [ -f /usr/local/bin/ag ]; then
+    alias silversearcher='/usr/local/bin/ag'
+else
+    alias silversearcher='/usr/bin/ag'
+fi
+
 alias gb='git branch'
 alias justdoit='git add -A :/ && gd'
 alias gf='git fetch --all --prune'
