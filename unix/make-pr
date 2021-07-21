@@ -29,7 +29,7 @@ else
 fi
 
 # Determine the path on GitHub from the remote URLs.
-repo_path="$(git config --get remote."$upstream".url | grep -Po '(?<=github.com:)[^\.]+')"
+repo_path="$(git config --get remote."$upstream".url | grep -o 'github.com:[^\.]\+' | sed 's/github\.com://')"
 
 my_branch="$(git rev-parse --abbrev-ref HEAD)"
 tracking_branch="$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")"
