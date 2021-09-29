@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -eu
-
-xrandr --output DVI-D-1 --off
-nohup synergy > /dev/null &
