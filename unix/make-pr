@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+
+set -eu
 
 # This script opens a tab in the default browser for creating a pull
 # request on GitHub.
@@ -8,6 +10,9 @@
 # The path for the pull request will be taken from the remote named 'upstream'
 # If such a remote is not defined, the remote named 'origin' will be used
 # instead.
+#
+# If a GITHUB_BROWSER environment variable is set, that command will always be
+# used to open the browser.
 
 if [ $# -eq 0 ] || [ -z "$1" ]; then
     # Default to a branch named 'dev'
@@ -45,7 +50,11 @@ fi
 
 url="https://github.com/$repo_path/compare/$branch_name...$from?expand=1"
 
-if command -v xdg-open > /dev/null; then
+GITHUB_BROWSER=${GITHUB_BROWSER:-}
+
+if [ -n "$GITHUB_BROWSER" ]; then
+    "$GITHUB_BROWSER" "$url" > /dev/null
+elif command -v xdg-open > /dev/null; then
     xdg-open "$url" > /dev/null
 else
     open "$url" > /dev/null
