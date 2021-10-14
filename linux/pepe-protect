@@ -21,8 +21,12 @@ inotifywait -m -e close_write -e moved_to "$from_directory" |
 while read -r directory events filename; do
     if [[ "$filename" != *.part ]] && [[ "$filename" != *.crdownload ]]; then
         base_name="$(basename "$filename")"
-
         from_name="$from_directory/$filename"
+
+        # We may have already moved the file when handling another event.
+        if ! [ -f "$from_name" ]; then
+            continue
+        fi
 
         # Handle a common bad filename
         if [ "$base_name" == upload ]; then
@@ -33,7 +37,13 @@ while read -r directory events filename; do
 
         # Use a differnt filename if the current one is already used.
         if [ -f "$to_name" ]; then
-            if ! cmp --silent "$from_name" "$to_name"; then
+            echo "comparing $from_name $to_name"
+
+            if ! cmp "$from_name" "$to_name"; then
+                echo "files are different..."
+            else
+                echo "files are the same"
+
                 # If the two files are the same, remove the new one.
                 rm -f "$from_name"
 
