@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -eu
+
+hyperx_name=alsa_output.usb-Kingston_HyperX_Amp_000000000001-00.analog-stereo
+speaker_name=alsa_output.pci-0000_28_00.4.analog-surround-21
+
+if pactl list | grep -q -- "$hyperx_name"; then
+    pactl -- set-sink-volume "$hyperx_name" 35%
+fi
+
+if pactl list | grep -q -- "$speaker_name"; then
+    pactl -- set-sink-volume "$speaker_name" 50%
+fi
