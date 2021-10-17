@@ -47,6 +47,8 @@ echo "Backing up Tabby /content to $first_disk" 1>&2
 
 # shellcheck disable=SC2086
 rsync -au $verbose $options \
+    --exclude='/video/youtube/ve' \
+    --exclude='/video/youtube/ve/**' \
     --include='/video/' \
     --include='/video/youtube/' \
     --include='/video/youtube/**' \
@@ -56,6 +58,8 @@ rsync -au $verbose $options \
 echo "Checking for missing files..." 1>&2
 
 rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+    --exclude='/video/youtube/ve' \
+    --exclude='/video/youtube/ve/**' \
     --include='/video/' \
     --include='/video/youtube/' \
     --include='/video/youtube/**' \
