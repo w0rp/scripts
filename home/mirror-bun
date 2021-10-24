@@ -106,7 +106,9 @@ echo "Checking for missing files..." 1>&2
 rsync --dry-run -av --info=flist0,stats0 --ignore-existing \
     --exclude-from="$HOME/script/home_rsync_excludes" \
     --exclude-from="$HOME/.rsync_excludes" \
-    "$first_dir/desktop/home/$user/" ~/ | grep -v '^\./$' > ~/.backup/home_missing
+    "$first_dir/desktop/home/$user/" ~/ \
+        | grep -v '^\(\./\|.config/BraveSoftware/.*/\)$' \
+        > ~/.backup/home_missing
 
 rsync --dry-run -av --info=flist0,stats0 --ignore-existing \
     --include='/audio/' \
