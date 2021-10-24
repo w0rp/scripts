@@ -103,12 +103,12 @@ rsync -au $options \
 echo "Checking for missing files..." 1>&2
 
 # Use rsync to find differences by using a verbose dry run.
-rsync --dry-run -v --info=flist0,stats0 -rL --ignore-existing \
+rsync --dry-run -av --info=flist0,stats0 --ignore-existing \
     --exclude-from="$HOME/script/home_rsync_excludes" \
     --exclude-from="$HOME/.rsync_excludes" \
-    "$first_dir/desktop/home/$user/" ~/ > ~/.backup/home_missing
+    "$first_dir/desktop/home/$user/" ~/ | grep -v '^\./$' > ~/.backup/home_missing
 
-rsync --dry-run -v --info=flist0,stats0 -rl --ignore-existing \
+rsync --dry-run -av --info=flist0,stats0 --ignore-existing \
     --include='/audio/' \
     --include='/audio/**' \
     --include='/image/' \
