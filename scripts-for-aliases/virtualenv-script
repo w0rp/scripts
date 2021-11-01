@@ -74,6 +74,12 @@ if [ -n "$base_virtual_env_dir" ] ; then
         DJANGO_SETTINGS_MODULE="spotlight.settings.w0rp_api"
         export DJANGO_SETTINGS_MODULE
     fi
+
+    if [ -f cloud_proxy/settings/dev.py ]; then
+        _OLD_VIRTUAL_DJANGO_SETTINGS_MODULE="$DJANGO_SETTINGS_MODULE"
+        DJANGO_SETTINGS_MODULE="cloud_proxy.settings.w0rp"
+        export DJANGO_SETTINGS_MODULE
+    fi
 else
     echo 'The virtualenv dir could not be detected' 1>&2
 fi
