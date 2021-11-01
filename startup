@@ -9,3 +9,5 @@ gconftool-2 -s /apps/gnome-terminal/keybindings/copy -t str '<Ctrl><Shift>c'
 if command -v zeal > /dev/null; then
     nohup zeal > /dev/null 2>&1 &
 fi
+
+~/script/home/set-volume-levels
