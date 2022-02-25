@@ -23,12 +23,13 @@ if ! [[ "$OSTYPE" =~ ^darwin ]]; then
 fi
 
 # Set up Go, if available
-if [ -d /usr/local/go ]; then
-    export PATH="$PATH:/usr/local/go/bin"
+if [ -d /usr/local/go ] && ! [[ -v GOROOT ]]; then
+    export GOROOT=/usr/local/go
 
     if command -v go &> /dev/null; then
         GOPATH=$(go env GOPATH)
         export GOPATH
+        export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
     fi
 fi
 
