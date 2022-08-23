@@ -9,7 +9,7 @@ if ! command -v gitlint > /dev/null; then
 fi
 
 if [ $# -ne 0 ] && [ "$1" ]; then
-    if ! echo "$1" | gitlint --ignore B6,T5; then
+    if ! echo "$1" | gitlint --ignore B6,T5,T8; then
         echo '' 1>&2
         echo 'Fix the gitlint errors above.' 1>&2
         exit 1
