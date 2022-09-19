@@ -29,8 +29,18 @@ while read -r directory events filename; do
         fi
 
         # Handle a common bad filename
-        if [ "$base_name" == upload ]; then
-            base_name="$base_name.jpg"
+        if [ "$base_name" == upload ] || [[ "$base_name" == *.upload ]]; then
+            mime_type=$(file -b --mime-type "$filename")
+
+            if [ "$mime_type" == image/png ]; then
+                extension="png"
+            elif [ "$mime_type" == video/mp4 ]; then
+                extension="mp4"
+            else
+                extension="jpg"
+            fi
+
+            base_name="${base_name%.*}.$extension"
         fi
 
         to_name="$to_directory/$base_name"
