@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -eu
+
+if ! command -v signal-backup-decode &> /dev/null; then
+   echo 'Install signal-backup-decode' 1>&2
+   exit 1
+fi
+
+if ! command -v sqlite3 &> /dev/null; then
+   echo 'Install sqlite3 first' 1>&2
+   exit 1
+fi
+
+if [ $# != 2 ]; then
+    echo 'Usage: decrypt-signal FILENAME PASSWORD' 1>&2
+    exit 1
+fi
+
+filename="$1"
+password="$2"
+extension="${filename##*.}"
+dir="${filename%.*}"
+
+if [ "$extension" != "backup" ]; then
+    echo $'The provided file doesn\'t look like a Signal backup file' 1>&2
+    exit 1
+fi
+
+# Only do the signal decoding step if the directory doesn't exist yet.
+if ! [ -d "$dir" ]; then
+    signal-backup-decode "$filename" --password "$password"
+fi
+
+# Run our Python script to extract conversations.
+python ~/script/python/extract_signal_conversations.py "$dir/signal_backup.db" "$dir"
