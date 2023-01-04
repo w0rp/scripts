@@ -31,6 +31,9 @@ git config --global gui.gcwarning false
 # Re-apply previous merge conflict fixes
 git config --global rerere.enabled true
 
+# Set the comment character to ';' to we can write '#' inline for issues
+git config --global core.commentchar ";"
+
 # Set settings for diff-so-fancy
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 git config --bool --global diff-so-fancy.markEmptyLines false
