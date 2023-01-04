@@ -18,7 +18,7 @@ fi
 # Read all lines into an array.
 line_list=()
 
-while read line; do
+while IFS= read -r line; do
     line_list+=("$line")
 done
 
