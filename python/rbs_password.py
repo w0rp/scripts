@@ -39,7 +39,7 @@ def main() -> None:
             if char.isdigit():
                 index = int(char) - 1
 
-                if index > 0 and index < len(rbs_pass):
+                if index >= 0 and index < len(rbs_pass):
                     print(rbs_pass[index])
 
         except KeyboardInterrupt:
