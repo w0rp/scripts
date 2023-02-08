@@ -165,3 +165,30 @@ killit() {
         echo 'No processes found.'
     fi
 }
+
+# A wrapper for pytest that automatically uses virtualenv.
+pytest() {
+    executable=''
+    home_executable="$HOME/.local/bin/pytest"
+
+    # Search for possible venv locations.
+    for env_dir in venv env ve; do
+        if [ -f "$env_dir/bin/pytest" ]; then
+            executable="$env_dir/bin/pytest"
+            break
+        fi
+    done
+
+    # Fall back on home executable.
+    if [ -z "$executable" ] && [ -f "$home_executable" ]; then
+        executable="$home_executable"
+    fi
+
+    # Do nothing if we cannot find it.
+    if [ -z "$executable" ]; then
+        echo 'Cannot find pytest!' 1>&2
+        return 1
+    fi
+
+    "$executable" "$@"
+}
