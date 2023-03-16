@@ -4,7 +4,7 @@
 # detecting where the script is. This only works for Bash, and won't screw up
 # other settings in the terminal like aliases.
 
-for dir in ve env; do
+for dir in .venv venv env ve; do
     if [ -d "$dir" ]; then
         base_virtual_env_dir="$dir"
         break
