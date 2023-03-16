@@ -25,7 +25,17 @@ if ! git rev-parse --verify "$branch_name" > /dev/null; then
     exit 1
 fi
 
-cd "$app_name/migrations"
+# Try to find the migration dir in either a sub directory or the main one.
+migration_dir="$app_name/migrations"
+
+for subdir in $(/bin/ls -1r); do
+    if [ -d "$subdir/$migration_dir" ]; then
+        migration_dir="$subdir/$migration_dir"
+        break
+    fi
+done
+
+cd "$migration_dir"
 
 # A command for finding migrations added in this branch
 added_migrations="git diff --name-only --diff-filter=A --relative $branch_name --"
@@ -76,15 +86,19 @@ for filename in $($added_migrations .); do
     end_filename=$(find_last_migration)
     end_migration_name="${end_filename::${#end_filename} - 3}"
 
-    # Extract the number and the suffix.
+    migration_name="${filename::${#filename} - 3}"
+
+    # Extract the suffix and the number.
+    # shellcheck disable=SC2001
+    migration_suffix=$(echo "$migration_name" | sed 's/^[0-9]*//')
     migration_number=$(echo "$end_filename" | grep -o '^[0-9]\+')
-    migration_suffix=$(echo "$filename" | sed 's/^[0-9]*//')
+    # Increment the number 1 past the end.
+    # shellcheck disable=SC2003
+    migration_number=$(printf '%04d' "$(expr "$migration_number" + 1)")
 
-    # Increment it.
-    migration_number=$(printf '%04d' $(expr $migration_number + 1))
-
-    # Build the new filename.
-    new_filename="$migration_number$migration_suffix"
+    # Build the new migration name and filename.
+    new_migration_name="$migration_number$migration_suffix"
+    new_filename="$new_migration_name.py"
 
     if [ "$filename" == "$new_filename" ]; then
         echo 'There is nothing to move.' 1>&2
@@ -100,10 +114,13 @@ for filename in $($added_migrations .); do
     # editing only those lines.
     start_line=$(grep -n 'dependencies *=' "$new_filename" | head -1 | cut -d : -f 1)
     end_offset=$(tail -n "+$start_line" "$new_filename" | grep -n '\]' | head -1 | cut -d : -f 1)
-    end_line=$(expr $start_line + $end_offset)
+    # shellcheck disable=SC2003
+    end_line=$(expr "$start_line" + "$end_offset")
 
     # Fix the dependencies.
     sed -i.bak "${start_line},${end_line}s/('$app_name', '[^']*')/('$app_name', '$end_migration_name')/" "$new_filename"; rm -f "$new_filename".bak
+    # Replace instances of the migration name that appear in the file.
+    sed -i.bak "s/$migration_name/$new_migration_name/g" "$new_filename"; rm -f "$new_filename".bak
 
     # Use this moved file as the last moved file.
     last_moved_file="$new_filename"
