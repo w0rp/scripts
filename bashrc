@@ -23,7 +23,7 @@ if ! [[ "$OSTYPE" =~ ^darwin ]]; then
 fi
 
 # Set up Go, if available
-if [ -d /usr/local/go ] && ! [[ -v GOROOT ]]; then
+if [ -d /usr/local/go ] && [ -z "$GOROOT" ]; then
     export GOROOT=/usr/local/go
 
     if command -v go &> /dev/null; then
