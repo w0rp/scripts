@@ -2,5 +2,5 @@
 
 set -eu
 
-xrandr --output DVI-D-1 --left-of DVI-D-0 --mode 1920x1080
+xrandr --output HDMI-1 --left-of HDMI-0 --mode 1920x1080
 pkill -f 'synergy'
