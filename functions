@@ -129,6 +129,11 @@ to_mp4() {
     ffmpeg -i "$1" -c:v h264_nvenc -c:a aac -crf 17 "$2"
 }
 
+to_ps4_mp4() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" -c:v h264_nvenc -c:a ac3 -crf 17 -level:v 4.2 "$2"
+}
+
 to_wav() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" -acodec pcm_s16le -ar 44100 "$2"
