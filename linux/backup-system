@@ -117,20 +117,23 @@ root_actions() {
     echo 'Syncing /' 1>&2
     $root_rsync \
         --include='/' \
+        --include='/content' \
         --include='/etc/' \
-        --include='/etc/hosts' \
-        --include='/etc/fuse.conf' \
-        --include='/etc/ssh/' \
-        --include='/etc/ssh/sshd_config' \
         --include='/etc/apt/' \
         --include='/etc/apt/sources.list.d/' \
         --include='/etc/apt/sources.list.d/*' \
-        --include='/etc/samba/' \
-        --include='/etc/samba/*' \
-        --include='/etc/ssmtp/' \
-        --include='/etc/ssmtp/*' \
+        --include='/etc/fuse.conf' \
+        --include='/etc/hosts' \
+        --include='/etc/jellyfin/' \
+        --include='/etc/jellyfin/**' \
         --include='/etc/network/' \
         --include='/etc/network/interfaces' \
+        --include='/etc/samba/' \
+        --include='/etc/samba/*' \
+        --include='/etc/ssh/' \
+        --include='/etc/ssh/sshd_config' \
+        --include='/etc/ssmtp/' \
+        --include='/etc/ssmtp/*' \
         --include='/usr/' \
         --include='/usr/share/' \
         --include='/usr/share/jellyfin/' \
@@ -144,7 +147,6 @@ root_actions() {
         --include='/var/lib/NetworkManager/**' \
         --include='/var/lib/jellyfin/' \
         --include='/var/lib/jellyfin/**' \
-        --include='/content' \
         --exclude='*' \
         "$from_dir/" "$to_dir/"
 
