@@ -33,9 +33,6 @@ if [ -d /usr/local/go ] && [ -z "$GOROOT" ]; then
     fi
 fi
 
-# Add the .vim dir to PYTHONPATH for rope.
-export PYTHONPATH="$HOME/.vim:$PYTHONPATH"
-
 # Make git accept commit messages generated for merges, so there's less
 # typing involved.
 export GIT_MERGE_AUTOEDIT=no
