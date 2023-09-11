@@ -180,7 +180,7 @@ wrap-python-executable() {
     home_executable="$HOME/.local/bin/$basename"
 
     # Search for possible venv locations.
-    for env_dir in venv env ve; do
+    for env_dir in .venv venv env ve; do
         if [ -f "$env_dir/bin/$basename" ]; then
             executable="$env_dir/bin/$basename"
             break
@@ -206,6 +206,7 @@ wrap-python-executable() {
 alias pytest='wrap-python-executable pytest'
 alias pre-commit='wrap-python-executable pre-commit'
 alias mypy='wrap-python-executable mypy'
+alias pyright='wrap-python-executable pyright'
 
 # Django wrappers
 alias runserver='wrap-python-executable python manage.py runserver'
