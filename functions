@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+# FIXME: All functions here need to be updated to use `local` variables.
+
 # Create properties easily for PekWM.
 propstring () {
     echo -n 'Property '
@@ -154,7 +156,19 @@ download_adfs_xml() {
 
 # A function for conveniently adding remotes for GitHub forks.
 add-github-remote() {
-    git remote add "$1" "git@github.com:${1}$(git remote -v | grep -o '/[^/]\+\.git' | uniq)"
+    local new_remote="$1"
+
+    local remote
+    for remote in $(git remote -v | awk '{print $1;}'); do
+        if [ "$new_remote" == "$remote" ]; then
+            echo -n 'We already have: ' 1>&2
+            git remote get-url origin 1>&2
+            return 1
+        fi
+    done
+
+    basename="$(basename "$(git config --get remote.origin.url)")"
+    git remote add "$new_remote" "git@github.com:${new_remote}/${basename}"
 }
 
 # A function for killing processes with confirmation.
