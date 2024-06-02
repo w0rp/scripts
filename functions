@@ -218,6 +218,8 @@ wrap-python-executable() {
 # Specific wrappers.
 # Using aliases makes them only available to interactive shells.
 alias pytest='wrap-python-executable pytest'
+alias flake8='wrap-python-executable flake8'
+alias isort='wrap-python-executable isort'
 alias pre-commit='wrap-python-executable pre-commit'
 alias mypy='wrap-python-executable mypy'
 alias pyright='wrap-python-executable pyright'
