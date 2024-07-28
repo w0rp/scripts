@@ -185,6 +185,52 @@ killit() {
     fi
 }
 
+wgo() {
+    local command="$1"
+
+    case $command in
+    list)
+        curl -s https://go.dev/dl/ | grep -Eo 'go[0-9]+\.[0-9]+\.[0-9]+' | sort -t "." -k1,1n -k2,2n -k3,3n -u
+    ;;
+    install)
+        if [ $# -ne 2 ]; then
+            echo 'Usage: wgo install <version>' 1>&2
+            return 1
+        fi
+
+        local version="$2"
+
+        if ! [[ "$version" =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Invalid version: $version" 1>&2
+            return 1
+        fi
+
+        go install "golang.org/dl/go$version@latest"
+        "go$version" download
+    ;;
+    esac
+}
+
+# Completion for the wgo function.
+_wgo() {
+    # shellcheck disable=SC2034
+    local cur prev words cword split
+    _init_completion -s || return
+
+    local commands
+    commands='list install'
+
+    if [[ $cword -eq 1 ]] ; then # if one argument given
+        # shellcheck disable=SC2207
+        COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
+    fi
+
+    # shellcheck disable=SC2128
+    [[ $COMPREPLY == *= ]] && compopt -o nospace
+    return
+}
+complete -F _wgo wgo
+
 # A wrapper for Python programs that automatically uses virtualenv.
 wrap-python-executable() {
     basename="$1"
