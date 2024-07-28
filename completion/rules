@@ -6,8 +6,10 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 # Use completion for git.
+# shellcheck source=git-completion.bash
 source ~/script/completion/git-completion.bash
 # Use completion for dub.
+# shellcheck source=dub-completion.bash
 source ~/script/completion/dub-completion.bash
 
 # Use git checkout aliases for gco
