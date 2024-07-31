@@ -5,6 +5,9 @@ if [ -z "$3" ]; then
     exit 1
 fi
 
+# FIXME: Check for and recommend install of gnu-sed instead.
+export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+
 # Determine the flag to use for extended regex.
 if [ "$(echo 'a' | sed -r 's/(a)/b/')" != 'b' ]; then
     # This is GNU sed, so use -r.
