@@ -60,6 +60,8 @@ alias github-url=$'echo "https://github.com/$(git config --get remote.$(git-curr
 alias github-commit-url=$'echo "$(github-url)/commit/$(git rev-parse HEAD)"'
 # shellcheck disable=SC2139
 alias github-branch-url=$'echo "$(github-url)/tree/$(git rev-parse --abbrev-ref HEAD)"'
+# shellcheck disable=SC2139
+alias github-actions-url=$'echo "$(github-url)/actions"'
 
 # Make GVim open files in a tab instead of a window.
 alias gvim='~/script/unix/gvim'
