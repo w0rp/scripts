@@ -76,6 +76,9 @@ alias load-apt-key='sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key
 # shellcheck disable=SC2139
 alias now-playing=$'xmms2 info | grep file:// | sed \'s/.*file:\\/\\///\''
 
+# Get information about the GPU!
+alias gpuinfo='cat $(find /proc/driver/ -type f -name information)'
+
 alias ve='source ~/script/scripts-for-aliases/virtualenv-script'
 
 alias pshell='~/script/python/start-shell'
