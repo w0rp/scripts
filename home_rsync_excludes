@@ -80,6 +80,7 @@
 /.local/share/Trash/
 /.local/share/baloo/
 /.local/share/klipper/
+/.local/share/waydroid/
 /.macromedia
 /.mozilla/firefox/*/SDThumbs/
 /.mozilla/firefox/*/SiteSecurityServiceState.txt
