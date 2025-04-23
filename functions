@@ -90,17 +90,24 @@ validate_transcoding_filenames() {
 
 # Download an MP3 from YouTube, or other sources.
 download-mp3() {
-    youtube-dl --extract-audio --audio-format mp3 "$1"
+    local cookies_args=''
+
+    if [ -f ~/Downloads/youtube/cookies.txt ]; then
+        cookies_args='--cookies cookies.txt'
+    fi
+
+    # shellcheck disable=SC2086
+    yt-dlp --extract-audio --audio-format mp3 $cookies_args "$1"
 }
 
 # Download an AAC file from YouTube, or other sources.
 download-aac() {
-    youtube-dl --extract-audio --audio-format aac "$1"
+    yt-dlp --extract-audio --audio-format aac "$1"
 }
 
 # Archive a YouTube video, preserving as much as possible.
 archive-youtube() {
-    youtube-dl -f 'bestvideo[ext!=webm]+bestaudio[ext!=webm]/best[ext!=webm]' \
+    yt-dlp -f 'bestvideo[ext!=webm]+bestaudio[ext!=webm]/best[ext!=webm]' \
         --write-info-json --write-thumbnail --add-metadata \
         "$1" \
         -o "./%(uploader)s/%(title)s {%(id)s}.%(ext)s"
@@ -126,19 +133,23 @@ to_x264_720p_aac_128k() {
     "$2"
 }
 
-to_mp4() {
+to__mp4() {
+    # FIXME: This doesn't play on phones!
     validate_transcoding_filenames "$1" "$2" && \
-    ffmpeg -i "$1" -c:v h264_nvenc -c:a aac -crf 17 "$2"
-}
-
-to_ps4_mp4() {
-    validate_transcoding_filenames "$1" "$2" && \
-    ffmpeg -i "$1" -c:v h264_nvenc -c:a ac3 -crf 17 -level:v 4.2 "$2"
+    ( \
+        ffmpeg -i "$1" -c:v h264_nvenc -c:a ac3 -crf 17 -level:v 4.2 "$2" \
+        || ffmpeg -i "$1" -c:v libx264 -c:a ac3 -crf 17 -level:v 4.2 "$2"
+    )
 }
 
 to_wav() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" -acodec pcm_s16le -ar 44100 "$2"
+}
+
+to_mp3() {
+    validate_transcoding_filenames "$1" "$2" && \
+    ffmpeg -i "$1" -vn -acodec libmp3lame -ar 44100 -q:a 2 "$2"
 }
 
 adfs_xml_url() {
