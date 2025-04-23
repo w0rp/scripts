@@ -196,6 +196,17 @@ killit() {
     fi
 }
 
+generate-clickhouse-password() {
+    # Prints the password and the XML for ClickHouse configuration.
+    head -c 8 /dev/urandom \
+        | base64 \
+        | tee /dev/tty \
+        | tr -d '\n' \
+        | sha256sum \
+        | awk '{print "<password_sha256_hex>" $1 "</password_sha256_hex>"}'
+}
+
+
 wgo() {
     local command="$1"
 
