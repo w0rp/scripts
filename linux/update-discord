@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -eu
+
+url='https://discord.com/api/download?platform=linux&format=deb'
+deb_file='discord.deb'
+
+current_version=$(
+    apt-cache show discord 2> /dev/null \
+    | grep -o 'Version: .*' \
+    | sed 's/Version: //'
+)
+trap 'rm -f "$deb_file"' EXIT
+curl -sS -L "$url" --output "$deb_file"
+new_version=$(
+    dpkg --info "$deb_file" \
+    | grep -o 'Version: .*' \
+    | sed 's/Version: //'
+)
+
+if [ "$current_version" != "$new_version" ]; then
+   sudo dpkg -i "$deb_file"
+fi
