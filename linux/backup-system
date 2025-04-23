@@ -215,6 +215,7 @@ if [ -f "$from_home_dir/.rsync_excludes" ]; then
     home_rsync="$home_rsync"' --exclude-from='"$from_home_dir/.rsync_excludes"
 fi
 
+# TODO: find a way to backup Waydroid.
 # rsync the /home/ directory.
 echo 'Syncing /home/' 1>&2
 $home_rsync \
