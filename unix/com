@@ -8,10 +8,44 @@ if ! command -v gitlint > /dev/null; then
     exit 1
 fi
 
+dir="$PWD"
+has_commitlint=0
+
+# Search upwards for .commitlintrc.json
+# Use this to figure out if we're using commitlint or not.
+while [ "$dir" != "/" ]; do
+    if [ -f "$dir/.commitlintrc.json" ]; then
+        has_commitlint=1
+        break
+    fi
+
+    parent="${dir%/*}"
+
+    if [ "$parent" = "$dir" ]; then
+        break
+    fi
+
+    dir="$parent"
+done
+
+
+# Require commitlint for conventional commit validation
+if ((has_commitlint)) && ! command -v commitlint > /dev/null; then
+    echo 'You must install commitlint' 1>&2
+    echo 'npm install -g @commitlint/cli @commitlint/config-conventional' 1>&2
+    exit 1
+fi
+
 if [ $# -ne 0 ] && [ "$1" ]; then
     if ! echo "$1" | gitlint --ignore B6,T5,T8; then
         echo '' 1>&2
         echo 'Fix the gitlint errors above.' 1>&2
+        exit 1
+    fi
+
+    if ((has_commitlint)) && ! echo "$1" | commitlint; then
+        echo '' 1>&2
+        echo 'Fix the commitlint errors above.' 1>&2
         exit 1
     fi
 
