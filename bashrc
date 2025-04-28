@@ -53,6 +53,15 @@ if [ -d ~/.cargo ]; then
     source "$HOME/.cargo/env"
 fi
 
+# Set up nvm, if available.
+if command -v nvm /dev/null; then
+    export NVM_DIR="$HOME/.nvm"
+    # shellcheck disable=SC1091
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    # shellcheck disable=SC1091
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
 # Make git accept commit messages generated for merges, so there's less
 # typing involved.
 export GIT_MERGE_AUTOEDIT=no
