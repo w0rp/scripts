@@ -36,12 +36,12 @@ else
 fi
 
 # Set up Go, if available
-if [ -d /usr/local/go ] && [ -z "$GOROOT" ]; then
-    export GOROOT=/usr/local/go
-
+if [ -z "$GOROOT" ]; then
     if command -v go &> /dev/null; then
         GOPATH=$(go env GOPATH)
+        GOROOT=$(go env GOROOT)
         export GOPATH
+        export GOROOT
         export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
     fi
 fi
