@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# A script for converting audio to text with OpenAI's Whisper easily.
+# Once Whisper is installed, this tool can be run without a network connection.
+#
+# Whisper will be automatically installed if not already installed.
+
+set -eu
+
+if [ $# -lt 1 ]; then
+    echo 'Usage: s2text <AUDIO_FILE>' 1>&2
+    exit 1
+fi
+
+audio_file="$1"
+
+if ! [ -f "$audio_file" ]; then
+    echo "$audio_file is not an audio file!" 1>&2
+    exit 1
+fi
+
+# Install whisper if needed.
+if ! /usr/bin/env python3 -m pip show openai-whisper > /dev/null; then
+    /usr/bin/env python3 -m pip install openai-whisper
+fi
+
+/usr/bin/env python3 -m whisper --model base --language English "$audio_file" \
+    | sed -E 's/^\[[^]]+\] *//'\
+    | tr '\n' ' ' \
+    | sed -E 's/ +/ /g' \
+    | sed -E 's/([.?!]) /\1\n\n/g'
