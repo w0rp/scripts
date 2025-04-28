@@ -2,11 +2,11 @@
 
 # A common 'main' script file to include across multiple machines.
 
-# shellcheck disable=SC1090
+# shellcheck source=./aliases
 . ~/script/aliases
-# shellcheck disable=SC1090
+# shellcheck source=./functions
 . ~/script/functions
-# shellcheck disable=SC1090
+# shellcheck source=./completion/rules
 . ~/script/completion/rules
 
 if ! ((KEEP_PS1)); then
