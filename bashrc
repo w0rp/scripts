@@ -17,8 +17,21 @@ export PATH="$PATH:$HOME/bin"
 # Scripts which should work on any Unix flavour.
 export PATH="$PATH:$HOME/script/unix"
 
-# Don't load the Linux-only scripts on Mac OSX
-if ! [[ "$OSTYPE" =~ ^darwin ]]; then
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+    # Set up Homebrew on Macs
+    if [ -e /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+
+    # Set up pyenv if it's around
+    if command -v pyenv > /dev/null; then
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+    fi
+else
+    # Load Linux scripts if not on a Mac
     export PATH="$PATH:$HOME/script/linux"
 fi
 
