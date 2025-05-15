@@ -19,6 +19,13 @@ while [ "$dir" != "/" ]; do
         break
     fi
 
+    # FIXME: do a loop through all configs
+    # https://commitlint.js.org/reference/configuration.html
+    if [ -f "$dir/.commitlintrc.yaml" ]; then
+        has_commitlint=1
+        break
+    fi
+
     parent="${dir%/*}"
 
     if [ "$parent" = "$dir" ]; then
