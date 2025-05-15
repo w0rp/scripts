@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+set -eu
+
+### macOS settings ###
+
+# Ensure `~/git` exists
+mkdir -p ~/git
+
+# Turn off the really annoying bouncing notification icons.
+defaults write com.apple.dock no-bouncing -bool TRUE
+
+### Brew essential packages ###
+
+# Install ninja for building lua-language-server
+brew install ninja
+# Install gnupg for GPG key signing (git)
+brew install gnupg
+# Install bash completion for Bash... completion
+brew install bash-completion
+# Install pyenv for installing any Python version
+brew install pyenv
+# Install compression utils, which some libraries use
+brew install xz
+# Install tools for finding and filtering things
+brew install rg fzf jq yq
+# Install AWS CLI for working with AWS
+brew install awscli
+# Install NPM for getting access to all things Node/JS/TS
+brew install npm
+# Install Neovim for testing plugins in Neovim
+brew install neovim
+# Install go to install all other go things
+brew install go
+# Install shellcheck for linting shell scripts
+brew install shellcheck
+
+### Brew nice-to-have packages ###
+
+# Install pandoc for converting HTML 2 PDF and so on
+brew install pandoc
+# Needed for HTML 2 PDF conversion
+brew install --cask mactex
+
+# Optional: Install monitorcontrol for setting up monitors.
+# brew install --cask monitorcontrol
+
+### Go setup ###
+
+# Install a more recent version of Go than Brew has.
+go_version=1.2.3
+go install "golang.org/dl/go${go_version}@latest"
+"go${go_version}" download
+
+
+### Rust setup ###
+
+# Press Enter to proceed with default installation
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Clone and build c2pastrip for removing c2pa data from AI images.
+(
+    cd ~/git
+    git clone git@github.com:neon2048/c2pastrip.git
+    cd c2pastrip
+    # Check out a specific commit for security reasons.
+    # NOTE: This will need adjusting over time.
+    git checkout d18c646fc9e1612d6908b1a43f783974c61b58b3
+
+    # The build fails without updating time, some of the time.
+    cargo update -p time
+    cargo build
+    cargo build --release
+    install target/release/c2pastrip ~/.cargo/bin/
+)
+
+### JS/TS setup ###
+# NOTE: Review what has been installed with: npm list -g --depth=0
+
+### Python setup ###
+
+# Add poetry for installing Python packages
+pip install poetry
+
+### Go setup ###
+
+# Install gopls for the Go language server
+go install golang.org/x/tools/gopls@latest
+
+# Install golangci-lint for pretty much all Go linting
+go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+### Other tools via language package managers ###
+
+# Add a language server for VimL
+npm install -g vim-language-server
+
+# Install commitlint for commit message linting
+npm install -g @commitlint/cli @commitlint/config-conventional
+
+# Add a tool to fuzzy autofix JSON (underrated!)
+npm install -g fixjson
+
+# Install html2pdf for converting HTML to... PDFs...
+npm install -g html2pdf.js
+
+# Add a tool for linting git commits
+pip install gitlint
