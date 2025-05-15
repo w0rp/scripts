@@ -13,7 +13,9 @@ if ! ((KEEP_PS1)); then
     PS1='\W$ '
 fi
 
-export PATH="$PATH:$HOME/bin"
+# Try local paths.
+# pip install --user does use `~/.local/bin`
+export PATH="$PATH:$HOME/bin:$HOME/.local/bin"
 # Scripts which should work on any Unix flavour.
 export PATH="$PATH:$HOME/script/unix"
 
