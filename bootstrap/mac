@@ -36,6 +36,8 @@ brew install go
 brew install shellcheck
 # Install poppler for `pdftotext`
 brew install poppler
+# Install VSCode for helping other developers.
+brew install --cask visual-studio-code
 
 ### Brew nice-to-have packages ###
 
