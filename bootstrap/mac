@@ -34,6 +34,8 @@ brew install neovim
 brew install go
 # Install shellcheck for linting shell scripts
 brew install shellcheck
+# Install poppler for `pdftotext`
+brew install poppler
 
 ### Brew nice-to-have packages ###
 
