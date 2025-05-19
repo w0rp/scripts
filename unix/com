@@ -44,19 +44,27 @@ if ((has_commitlint)) && ! command -v commitlint > /dev/null; then
 fi
 
 if [ $# -ne 0 ] && [ "$1" ]; then
-    if ! echo "$1" | gitlint --ignore B6,T5,T8; then
+    message="$1"
+
+    if ! echo "$message" | gitlint --ignore B6,T5,T8; then
         echo '' 1>&2
         echo 'Fix the gitlint errors above.' 1>&2
         exit 1
     fi
 
-    if ((has_commitlint)) && ! echo "$1" | commitlint; then
+    # If we use `com wip` then replace the message with one that passes
+    # commitlint, if needed.
+    if ((has_commitlint)) && [ "$message" = 'wip' ]; then
+        message='chore(temp): wip'
+    fi
+
+    if ((has_commitlint)) && ! echo "$message" | commitlint; then
         echo '' 1>&2
         echo 'Fix the commitlint errors above.' 1>&2
         exit 1
     fi
 
-    git commit -m "$1"
+    git commit -m "$message"
 else
     git commit
 fi
