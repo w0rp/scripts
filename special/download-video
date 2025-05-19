@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Place this script in ~/Downloads/youtube or wherever.
+# Use it to quickly grab videos and music on desktops/laptops.
+#
+# This script assumes you're using Firefox and grabs cookies from Firefox.
+
+set -eu
+
+output_format='./%(uploader)s/%(title)s {%(id)s}.%(ext)s'
+
+# If a second argument is provided, output to a given output directory.
+if [ $# -ge 2 ]; then
+    output_format="$2/%(title)s {%(id)s}.%(ext)s"
+fi
+
+.venv/bin/pip install -U yt-dlp
+
+input="$1"
+# Strip out colour codes pasted into Dolphin embedded terminals and stuff,
+# so users can more rapidly slam in URLs and get content immediately.
+input=$(
+    echo "$input" \
+    | grep -oE '~?https?://[^[:space:]~]+' \
+    | sed 's/^~//' \
+    | sed 's/~$//'
+)
+
+# shellcheck disable=SC2086
+.venv/bin/yt-dlp -f 'bestvideo[ext!=webm]+bestaudio[ext!=webm]/best[ext!=webm]' \
+    --write-info-json --write-thumbnail --add-metadata \
+    --cookies-from-browser firefox \
+    "$input" \
+    -o "$output_format"
+
