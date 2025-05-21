@@ -4,7 +4,7 @@ set -eu
 
 # Require gitlint for validating commits
 if ! command -v gitlint > /dev/null; then
-    echo 'You must install gitlint: sudo pip install gitlint' 1>&2
+    echo 'You must install gitlint: pip install --break-system-packages gitlint' 1>&2
     exit 1
 fi
 
