@@ -85,6 +85,9 @@ alias pshell='~/script/python/start-shell'
 
 alias get-rbs-password='~/script/python/rbs_password.py'
 
+# shellcheck disable=SC2142
+alias env-mismatches='grep -nH "[A-Z_]=" *.y*ml | awk -F= '\''{ split($1, a, ":"); file=a[1]; ln=a[2]; lhs=a[3]; gsub(/^ *- */, "", lhs); gsub(/^ +| +$/, "", lhs); rest=substr($0, index($0, a[3])); if (match(rest, /\$\{[A-Z_][A-Z0-9_]*/)) { var=substr(rest, RSTART+2, RLENGTH-2); if (lhs != var) print file ":" ln ": " rest } }'\'''
+
 # aliases specific to Mac OSX.
 if [[ "$OSTYPE" =~ ^darwin ]]; then
     # Automatically use the MacVim version of Vim.
