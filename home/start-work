@@ -3,4 +3,5 @@
 set -eu
 
 xrandr --output HDMI-1 --off
-nohup synergy > /dev/null &
+cd ~/git/input-leap/
+nohup bin/input-leap > /dev/null &

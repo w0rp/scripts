@@ -3,4 +3,4 @@
 set -eu
 
 xrandr --output HDMI-1 --left-of HDMI-0 --mode 1920x1080
-pkill -f 'synergy'
+pkill -f 'input-leap'
