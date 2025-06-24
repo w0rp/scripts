@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+# Run this script from a git project root.
+# Pipe in a raw stack trace to it.
+#
+# Usage: ./find-code-owners < stacktrace.txt
+# Default CODEOWNERS_FILE is taken from .github/CODEOWNERS
+
+set -eu
+
+CODEOWNERS_FILE=.github/CODEOWNERS
+
+if [[ ! -f $CODEOWNERS_FILE ]]; then
+  echo "ERROR: CODEOWNERS file not found: $CODEOWNERS_FILE" >&2
+  exit 1
+fi
+
+# Load CODEOWNERS patterns & owners (skip comments/blanks)
+declare -a patterns owners
+idx=0
+
+while IFS= read -r line; do
+    # trim whitespace
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+
+    if [[ -z $line || ${line:0:1} == "#" ]]; then
+        continue
+    fi
+
+    # first token is pattern; rest are owners
+    pat=${line%%[[:space:]]*}
+    # strip the pattern
+    own=${line#"$pat"}
+    # then trim any leading whitespace
+    own="${own#"${own%%[![:space:]]*}"}"
+    patterns[idx]=$pat
+    owners[idx]=$own
+    idx=$((idx + 1))
+done < "$CODEOWNERS_FILE"
+
+# Process stack-trace lines via process substitution
+while IFS= read -r target; do
+    match=""
+    for ((i=0; i<idx; i++)); do
+        p=${patterns[i]}
+        o=${owners[i]}
+
+        # exact “ends-with-slash” patterns
+        if [[ ${p: -1} == "/" ]]; then
+            base=${p%/}
+
+            if [[ $target == $base/* ]]; then
+                match=$o
+            fi
+        # plain-directory patterns (no globs, no trailing slash)
+        elif [[ $p != *[\*\?]* && ${p: -1} != "/" && $target == $p/* ]]; then
+            match=$o
+        # glob-patterns
+        elif [[ $p == *[\*\?]* ]]; then
+            # shellcheck disable=SC2254
+            case $target in
+                $p) match=$o ;;
+            esac
+
+        elif [[ $target == "$p" ]]; then
+            match=$o
+        fi
+    done
+
+    if [[ -n $match ]]; then
+        echo "$match: $target"
+    else
+        echo "UNKNOWN: $target"
+    fi
+done < <(
+    grep '^  at' \
+    | grep -v '<anonymous>\|app-react/main-\|node_modules/' \
+    | sed -E 's/^  at [^(]*\(([^:]+\.[jt]sx?):[0-9]+:[0-9]+\).*/\1/' \
+    | sed 's|^\./||' \
+    | sort -u
+) \
+  | sort \
+  | awk -F': ' '
+      # collect each target under its owner
+      { buckets[$1] = buckets[$1] sprintf("  %s\n", $2) }
+      END {
+        # print all buckets except “UNKNOWN”
+        for (owner in buckets)
+            if (owner != "UNKNOWN")
+                printf "%s:\n%s", owner, buckets[owner]
+        # then print “UNKNOWN” last, if present
+        if ("UNKNOWN" in buckets)
+            printf "UNKNOWN:\n%s", buckets["UNKNOWN"]
+      }
+    '
