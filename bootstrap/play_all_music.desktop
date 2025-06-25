@@ -1,0 +1,13 @@
+# Write as /home/w0rp/.local/share/kio/servicemenus/play_all_music.desktop
+[Desktop Entry]
+Type=Service
+Name=Play All Music
+Icon=lxmusic
+MimeType=all/allfiles;inode/directory;
+Actions=PlayAllMusic
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+
+[Desktop Action PlayAllMusic]
+Name=Play All Music
+Icon=lxmusic
+Exec=/home/w0rp/script/linux/xmms2-play-all %F
