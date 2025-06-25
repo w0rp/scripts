@@ -41,6 +41,12 @@ done < "$CODEOWNERS_FILE"
 
 # Process stack-trace lines via process substitution
 while IFS= read -r target; do
+    # Assume deeply nested relative paths are rooted at the repo.
+    # This fuzzy-match deeply nested relative TypeScript imports.
+    if [[ $target == *../../../* ]]; then
+        target="${target##*../}"
+    fi
+
     match=""
     for ((i=0; i<idx; i++)); do
         p=${patterns[i]}
@@ -74,9 +80,10 @@ while IFS= read -r target; do
         echo "UNKNOWN: $target"
     fi
 done < <(
-    grep '^  at' \
-    | grep -v '<anonymous>\|app-react/main-\|node_modules/' \
+    grep -E '^  at|^  File "|^[[:alnum:]]+/.*\.[jt]sx?$' \
+    | grep -Ev '<anonymous>|app-react/main-|node_modules/|node:internal' \
     | sed -E 's/^  at [^(]*\(([^:]+\.[jt]sx?):[0-9]+:[0-9]+\).*/\1/' \
+    | sed -E 's/^  File "([^:]+\.[jt]sx?)",.*/\1/' \
     | sed 's|^\./||' \
     | sort -u
 ) \
