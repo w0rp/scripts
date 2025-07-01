@@ -35,6 +35,14 @@ if [[ "$OSTYPE" =~ ^darwin ]]; then
 else
     # Load Linux scripts if not on a Mac
     export PATH="$PATH:$HOME/script/linux"
+
+    # Set up pyenv if it's around
+    if [ -f "$HOME/.pyenv/bin/pyenv" ]; then
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+
+        eval "$(pyenv init - bash)"
+    fi
 fi
 
 # Set up Go, if available
