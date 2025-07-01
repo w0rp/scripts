@@ -133,13 +133,9 @@ to_x264_720p_aac_128k() {
     "$2"
 }
 
-to__mp4() {
-    # FIXME: This doesn't play on phones!
+to_mp4() {
     validate_transcoding_filenames "$1" "$2" && \
-    ( \
-        ffmpeg -i "$1" -c:v h264_nvenc -c:a ac3 -crf 17 -level:v 4.2 "$2" \
-        || ffmpeg -i "$1" -c:v libx264 -c:a ac3 -crf 17 -level:v 4.2 "$2"
-    )
+        ffmpeg -hwaccel cuda -i "$1" -c:v h264_nvenc -preset p4 -c:a aac -b:a 192k "$2"
 }
 
 to_wav() {
