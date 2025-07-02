@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Cross-platform clipboard writer using pbcopy (macOS) or xclip/xsel (Linux)
+
+set -eu
+
+if [[ "$OSTYPE" == 'darwin'* ]]; then
+  exec pbcopy
+elif command -v xclip > /dev/null 2>&1; then
+  exec xclip -selection clipboard
+elif command -v xsel > /dev/null 2>&1; then
+  exec xsel --clipboard --input
+else
+  echo 'Error: no clipboard tool found (install xclip or xsel)' >&2
+  exit 1
+fi
