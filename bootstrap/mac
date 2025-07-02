@@ -39,10 +39,10 @@ brew install poppler
 # Install `gh` for GitHub commands, with extensions
 # Enables `gh codeowners lint`, `gh codeowners view`, `gh codeowners pr 123`
 brew install gh && gh extension install heaths/gh-codeowners
-# Install a `codeowners` command for querying who owns a file
-brew tap hmarr/tap && brew install codeowners
 # Install VSCode for helping other developers.
 brew install --cask visual-studio-code
+# Install k9s for kubernetes
+brew install derailed/k9s/k9s
 
 ### Brew nice-to-have packages ###
 
