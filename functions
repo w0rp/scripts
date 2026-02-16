@@ -251,23 +251,23 @@ complete -F _wgo wgo
 
 # A wrapper for Python programs that automatically uses virtualenv.
 wrap-python-executable() {
-    basename="$1"
+    local basename="$1"
     shift 1
 
-    executable=''
-    home_executable="$HOME/.local/bin/$basename"
+    local executable=''
+    local home_executable="$HOME/.local/bin/$basename"
 
     # Search for possible venv locations.
     for env_dir in .venv venv env ve; do
         if [ -f "$env_dir/bin/$basename" ]; then
-            executable="$env_dir/bin/$basename"
+            local executable="$env_dir/bin/$basename"
             break
         fi
     done
 
     # Fall back on home executable.
     if [ -z "$executable" ] && [ -f "$home_executable" ]; then
-        executable="$home_executable"
+        local executable="$home_executable"
     fi
 
     # Do nothing if we cannot find it.
