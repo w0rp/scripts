@@ -34,17 +34,12 @@ git config --global rerere.enabled true
 # Set the comment character to ';' to we can write '#' inline for issues
 git config --global core.commentchar ";"
 
-# Set settings for diff-so-fancy
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
-git config --bool --global diff-so-fancy.markEmptyLines false
-git config --bool --global diff-so-fancy.stripLeadingSymbols false
+# Enable colours for Git
 git config --global color.ui true
-
 git config --global color.diff-highlight.oldNormal    "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
 git config --global color.diff-highlight.newNormal    "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
-
 git config --global color.diff.meta       "yellow"
 git config --global color.diff.frag       "magenta bold"
 git config --global color.diff.commit     "yellow bold"
@@ -54,3 +49,40 @@ git config --global color.diff.whitespace "red reverse"
 
 # Install a tool for interactively selecting a branch
 npm install --global git-branch-select
+
+# Install git-delta for better diffs
+if ! command -v delta &> /dev/null; then
+    if [[ "$OSTYPE" =~ ^darwin ]]; then
+        brew install git-delta
+    elif command -v apt &> /dev/null; then
+        echo 'Asking to install git-delta via apt'
+        sudo apt install git-delta
+    else
+        echo 'Cannot find a way to install git-delta!' 1>&2
+        exit 1
+    fi
+fi
+
+# Use delta for diffs
+git config --global core.pager delta
+git config --global interactive.diffFilter 'delta --color-only'
+# Enable key navigation for delta.
+git config --global delta.navigate true
+# Disable side-by-side diffs for delta.
+git config --global delta.side-by-side false
+# Use the Dracula theme for Delta.
+git config --global delta.syntax-theme Dracula
+# Include line numbers in delta output.
+git config --global delta.line-numbers false
+# Include hyperlinks so you can click on files and commits to open them.
+git config --global delta.hyperlinks true
+# Disable "hunk headers" for class/method names in diffs.
+git config --global delta.hunk-header-style omit
+# Get rid of Unicode characters for character wrapping.
+git config --global delta.wrap-left-symbol ' '
+git config --global delta.wrap-right-symbol ' '
+# Use ASCII characters for file modification markers.
+git config --global delta.file-added-label = "+"
+git config --global delta.file-removed-label = "-"
+git config --global delta.file-modified-label = "%"
+git config --global delta.file-renamed-label = "*"
