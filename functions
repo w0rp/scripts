@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-# FIXME: All functions here need to be updated to use `local` variables.
-
 # Create properties easily for PekWM.
 propstring () {
     echo -n 'Property '
@@ -136,8 +134,9 @@ adfs_xml_url() {
 }
 
 download_adfs_xml() {
+    local domain
     domain=$(echo "$1" | sed -e 's/^\([a-zA-Z0-9]\+:\/\/\|\)\([^\/]\+\).*/\2/')
-    url="https://$domain/FederationMetadata/2007-06/FederationMetadata.xml"
+    local url="https://$domain/FederationMetadata/2007-06/FederationMetadata.xml"
 
     wget --no-check-certificate "$url" -O "${domain}-metadata.xml" || rm -f "${domain}-metadata.xml"
 }
@@ -155,6 +154,7 @@ add-github-remote() {
         fi
     done
 
+    local basename
     basename="$(basename "$(git config --get remote.origin.url)")"
     git remote add "$new_remote" "git@github.com:${new_remote}/${basename}"
 }
