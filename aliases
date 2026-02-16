@@ -16,15 +16,8 @@ alias gd_=$'git diff -M -D'
 alias gd='gd_ --cached'
 alias ga='git add -A'
 alias gbs='git branch-select'
-# Make ag do nothing at all, so we accidentally run silversearcher.
+# Make ag do nothing at all, to prevent running silversearcher
 alias ag='true'
-
-# Add a new alias for silversearcher, so we can run it.
-if [ -f /usr/local/bin/ag ]; then
-    alias silversearcher='/usr/local/bin/ag'
-else
-    alias silversearcher='/usr/bin/ag'
-fi
 
 alias gb='git branch'
 alias justdoit='git add -A :/ && gd'
@@ -37,8 +30,6 @@ alias gls='git ls-tree -r --name-only'
 # Creating quick ZIPs for git repos.
 # shellcheck disable=SC2139
 alias git-zip='git archive --format zip "$(git rev-parse HEAD)" --output'
-# My custom command for deleting everything.
-alias gw='git-wipeout'
 alias gsquash='git merge --ff --squash'
 # Show an overview of stuff in the git log, with just the right amount of information
 alias git-overview='git log --decorate --graph --first-parent --branches --oneline'
@@ -70,20 +61,10 @@ alias check-cert='openssl x509 -text -noout -in'
 # Make `..` do `cd ..`
 alias ..='cd ..'
 
-# An alias for loading a missing apt key, using the Ubuntu key server.
-alias load-apt-key='sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys'
-
-# shellcheck disable=SC2139
-alias now-playing=$'xmms2 info | grep file:// | sed \'s/.*file:\\/\\///\''
-
 # Get information about the GPU!
 alias gpuinfo='cat $(find /proc/driver/ -type f -name information) /proc/driver/*/version'
 
 alias ve='source ~/script/scripts-for-aliases/virtualenv-script'
-
-alias pshell='~/script/python/start-shell'
-
-alias get-rbs-password='~/script/python/rbs_password.py'
 
 # shellcheck disable=SC2142
 alias env-mismatches='grep -nH "[A-Z_]=" *.y*ml | awk -F= '\''{ split($1, a, ":"); file=a[1]; ln=a[2]; lhs=a[3]; gsub(/^ *- */, "", lhs); gsub(/^ +| +$/, "", lhs); rest=substr($0, index($0, a[3])); if (match(rest, /\$\{[A-Z_][A-Z0-9_]*/)) { var=substr(rest, RSTART+2, RLENGTH-2); if (lhs != var) print file ":" ln ": " rest } }'\'''

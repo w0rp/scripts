@@ -22,26 +22,7 @@ quick-warc() {
     fi
 }
 
-# Create a .7z file from a directory or file in the same directory with
-# .7z as the suffix.
-mk7z() {
-    if [ -z "$1" ]; then
-        echo 'Please supply a file' 1>&2
-        return 1;
-    fi
-
-    src="$(basename "$1")"
-    dst="$src".7z
-
-    if [ -f "$dst" ]; then
-        echo "$dst already exists" 1>&2
-        return 1;
-    fi
-
-    7z a "$dst" "$src"
-}
-
-# Backup one director to another with rsync.
+# Backup one directory to another with rsync.
 backup() {
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo 'Usage: backup <src> <dest>' 1>&2
