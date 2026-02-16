@@ -82,7 +82,7 @@ git config --global delta.hunk-header-style omit
 git config --global delta.wrap-left-symbol ' '
 git config --global delta.wrap-right-symbol ' '
 # Use ASCII characters for file modification markers.
-git config --global delta.file-added-label = "+"
-git config --global delta.file-removed-label = "-"
-git config --global delta.file-modified-label = "%"
-git config --global delta.file-renamed-label = "*"
+git config --global delta.file-added-label '+'
+git config --global delta.file-removed-label '-'
+git config --global delta.file-modified-label '%'
+git config --global delta.file-renamed-label '*'
