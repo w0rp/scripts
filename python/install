@@ -5,6 +5,9 @@ cd "$(dirname "$0")"
 set -e
 
 rm -rf ve
-python3.10 -m venv ve
+
+python -m venv ve
+# shellcheck disable=SC1073
+# shellcheck disable=SC1091
 source ve/bin/activate
 pip install -q -r requirements.txt

@@ -1,5 +1,2 @@
-ipython==8.10.0
 flake8==3.9.0
 isort==5.8.0
-jedi==0.18.0
-pykeepass==4.0.0

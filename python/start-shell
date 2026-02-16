@@ -12,4 +12,4 @@ fi
 
 source ve/bin/activate
 
-PYTHONSTARTUP=startup.py ipython --profile=w0rp-script-env --config=config
+PYTHONSTARTUP=startup.py python
