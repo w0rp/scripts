@@ -294,6 +294,30 @@ alias runserver='wrap-python-executable python manage.py runserver'
 alias shell='wrap-python-executable python manage.py shell_plus'
 alias dbshell='wrap-python-executable python manage.py dbshell'
 
+# A wrapper for JS programs that automatically use node_modules versions.
+wrap-js-executable() {
+    local basename="$1"
+    shift 1
+
+    local executable=''
+
+    if [ -f "node_modules/.bin/$basename" ]; then
+        local executable="node_modules/.bin/$basename"
+    fi
+
+    # Do nothing if we cannot find it.
+    if [ -z "$executable" ]; then
+        echo "Cannot find $basename!" 1>&2
+        return 1
+    fi
+
+    "$executable" "$@"
+}
+
+alias biome='wrap-js-executable biome'
+alias eslint='wrap-js-executable eslint'
+alias tsc='wrap-js-executable tsc'
+
 # A function to serve an HTML file to localhost via a relatively random port
 # Written with ChatGPT vibe coding.
 serve-html() {
