@@ -117,6 +117,16 @@ to_mp4() {
         ffmpeg -hwaccel cuda -i "$1" -c:v h264_nvenc -preset p4 -c:a aac -b:a 192k "$2"
 }
 
+# A function for producing very small .mp4 files
+smol_mp4() {
+    validate_transcoding_filenames "$1" "$2" && \
+    # Scale video resolution by 1/7
+    # Keep bitrate low
+    ffmpeg -hwaccel cuda -i "$1" -vf scale=iw/7:ih/7 \
+        -c:v h264_nvenc -preset p4 -b:v 250k -maxrate 250k -bufsize 500k \
+        -c:a aac -b:a 64k "$2"
+}
+
 to_wav() {
     validate_transcoding_filenames "$1" "$2" && \
     ffmpeg -i "$1" -acodec pcm_s16le -ar 44100 "$2"
