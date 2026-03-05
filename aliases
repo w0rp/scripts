@@ -13,6 +13,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     alias o='xdg-open'
 fi
+
 # Aliases for typing git commands really quickly.
 # shellcheck disable=SC2139
 alias gl='git log --first-parent'
@@ -82,4 +83,11 @@ if [[ "$OSTYPE" =~ ^darwin ]]; then
     if [ -f /Applications/MacVim.app/Contents/MacOS/Vim ]; then
         alias vim=/Applications/MacVim.app/Contents/MacOS/Vim
     fi
+fi
+
+# Add a claude-plans alias for showing Claude Code plans.
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+    alias claude-plans='command gls -lth --color=auto --hyperlink=auto ~/.claude/plans'
+else
+    alias claude-plans='/bin/ls -lth --color=auto --hyperlink=auto ~/.claude/plans'
 fi
