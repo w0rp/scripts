@@ -12,6 +12,8 @@ defaults write com.apple.dock no-bouncing -bool TRUE
 
 ### Brew essential packages ###
 
+# Install GNU coreutils so they can be used on Mac
+brew install coreutils
 # Install ninja for building lua-language-server
 brew install ninja
 # Install gnupg for GPG key signing (git)
