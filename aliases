@@ -7,8 +7,12 @@ else
     alias ls='ls -p --color -h --group-directories-first --hide=__pycache__'
 fi
 
-# Open files easily with o
-alias o='xdg-open'
+# Open files easily with `o`
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias o='open'
+else
+    alias o='xdg-open'
+fi
 # Aliases for typing git commands really quickly.
 # shellcheck disable=SC2139
 alias gl='git log --first-parent'
