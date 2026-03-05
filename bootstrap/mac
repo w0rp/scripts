@@ -113,5 +113,8 @@ npm install -g fixjson
 # Install html2pdf for converting HTML to... PDFs...
 npm install -g html2pdf.js
 
+# Install mermaid CLI for converting mermaid diagrams to SVG/PNG
+npm install -g @mermaid-js/mermaid-cli
+
 # Add a tool for linting git commits
 pip install gitlint
