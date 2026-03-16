@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -eu
+
+git config user.email devw0rp@gmail.com
+git config user.name w0rp
+git config user.signingkey 418BCC5B0A35F20B
+
+echo 'The local repo is now configured to sign commits as w0rp!'
