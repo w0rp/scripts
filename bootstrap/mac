@@ -125,3 +125,10 @@ pip install gitlint
 # This makes Linear launch Claude Code CLI in iTerm2 instead of Terminal.app
 brew install duti
 duti -s com.googlecode.iterm2 .command all
+
+# Configure Claude Code
+if ! [ -d ~/.claude ]; then
+    echo 'Cloning claude-code-config into ~/.claude ...'
+    echo
+    git clone git@github.com:w0rp/claude-code-config.git ~/.claude
+fi
