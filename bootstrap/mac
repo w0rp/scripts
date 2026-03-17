@@ -120,3 +120,8 @@ npm install -g @mermaid-js/mermaid-cli
 
 # Add a tool for linting git commits
 pip install gitlint
+
+# Make iTerm2 the default command script application
+# This makes Linear launch Claude Code CLI in iTerm2 instead of Terminal.app
+brew install duti
+duti -s com.googlecode.iterm2 .command all
