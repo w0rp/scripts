@@ -169,6 +169,102 @@ add-github-remote() {
     git remote add "$new_remote" "git@github.com:${new_remote}/${basename}"
 }
 
+# gt - Create a git worktree with a given branch name (new branch)
+gt() {
+    local branch
+    local root
+    local prefix
+    local worktrees_dir
+    local target_dir
+    local upstream
+
+    branch="${1:-}"
+
+    if [ -z "$branch" ]; then
+        printf "usage: git_wt_new <new-branch-name>\n" >&2
+        return 1
+    fi
+
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+        printf "not inside a git working tree\n" >&2
+        return 1
+    }
+
+    # Use upstream first, origin second for the upstream.
+    if git config --get remote.upstream.url > /dev/null; then
+        upstream='upstream'
+    else
+        upstream='origin'
+    fi
+
+    prefix="$(basename "$root")"
+    worktrees_dir="$HOME/git/worktrees/"
+    target_dir="${worktrees_dir}${prefix}-${branch}"
+
+    mkdir -p "$worktrees_dir" || return 1
+
+    if git show-ref --verify --quiet "refs/heads/$branch" \
+        || git show-ref --verify --quiet "refs/remotes/$upstream/$branch"; then
+        printf "branch already exists: %s\n" "$branch" >&2
+        return 1
+    fi
+
+    if [ -e "$target_dir" ]; then
+        printf "target already exists: %s\n" "$target_dir" >&2
+        return 1
+    fi
+
+    git worktree add -b "$branch" "$target_dir" HEAD || return 1
+    cd "$target_dir" || return 1
+}
+
+# Fold a git worktree back to the main code again
+gx-tree() {
+    local root
+    local common_dir
+    local main_root
+    local current_root
+    local remove_dir
+
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+        printf "not inside a git working tree\n" >&2
+        return 1
+    }
+
+    common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || {
+        printf "could not resolve common git dir\n" >&2
+        return 1
+    }
+
+    main_root="$(dirname "$common_dir")"
+    current_root="$root"
+
+    cd "$main_root" || return 1
+
+    if [ "$current_root" = "$main_root" ]; then
+        if [ -z "${1:-}" ]; then
+            printf "you are in the main tree; pass a worktree path to remove\n" >&2
+            return 1
+        fi
+
+        remove_dir="$1"
+
+        case "$remove_dir" in
+            /*) ;;
+            *) remove_dir="$PWD/$remove_dir" ;;
+        esac
+    else
+        remove_dir="$current_root"
+    fi
+
+    if [ "$remove_dir" = "$main_root" ]; then
+        printf "refusing to remove the main tree\n" >&2
+        return 1
+    fi
+
+    git worktree remove "$remove_dir" || return 1
+}
+
 # A function for killing processes with confirmation.
 killit() {
     if pgrep -af "$1"; then
