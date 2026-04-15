@@ -12,9 +12,12 @@ source ~/script/completion/git-completion.bash
 # shellcheck source=dub-completion.bash
 source ~/script/completion/dub-completion.bash
 
-# Use git checkout aliases for gco
+# Use git checkout completion for gco
 __git_complete gco _git_checkout
 __git_complete make-pr _git_checkout
+
+# Use git checkout completion for `gx-tree` for folding in worktrees
+__git_complete gx-tree _git_checkout
 
 # Use git branch completion for move-migrations
 __git_complete move-migrations _git_checkout
