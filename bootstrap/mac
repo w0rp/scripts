@@ -93,6 +93,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Add poetry for installing Python packages
 pip install poetry
 
+# FIXME: We'll need to fix Python installation to set up uv later.
+
+# Install tombi for checking TOML files.
+uv tool install tombi
+
 ### Go setup ###
 
 # Install gopls for the Go language server
