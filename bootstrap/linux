@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# Install tombi globally for checking TOML syntax
+uv tool install tombi
