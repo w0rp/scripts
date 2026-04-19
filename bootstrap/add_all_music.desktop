@@ -6,6 +6,7 @@ Icon=lxmusic
 MimeType=all/allfiles;inode/directory;
 Actions=AddAllMusic
 X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+X-KDE-Priority=TopLevel
 
 [Desktop Action AddAllMusic]
 Name=Add All Music
