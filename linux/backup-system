@@ -95,7 +95,7 @@ root_actions() {
             --exclude='*' \
             "$from_dir/" "$to_dir/"
 
-        if [ -f "$dest_dir/apt-keys" ]; then
+        if [ -f "$dest_dir/apt-keys" ] && command -v apt-key > /dev/null; then
             # Import all of the public keys we saved.
             apt-key add "$dest_dir/apt-keys"
         fi
@@ -165,8 +165,10 @@ if ((restore)); then
     # Non-root system restore tasks should go here.
     true
 else
-    # Output the full list of public keys for apt.
-    apt-key exportall > "$dest_dir/apt-keys"
+    if command -v apt-key > /dev/null; then
+        # Output the full list of public keys for apt.
+        apt-key exportall > "$dest_dir/apt-keys"
+    fi
 
     # Output the full list of packages installed through apt.
     apt-mark showmanual > "$dest_dir/apt-packages"
