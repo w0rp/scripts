@@ -151,6 +151,28 @@ download_adfs_xml() {
     wget --no-check-certificate "$url" -O "${domain}-metadata.xml" || rm -f "${domain}-metadata.xml"
 }
 
+# Create WARC archives of any site with wget
+warc() {
+    local url host domain
+
+    url="$1"
+    host="${url#*://}"
+    host="${host%%/*}"
+    host="${host%%:*}"
+
+    domain="${host#www.}"
+
+    wget \
+        --mirror \
+        --page-requisites \
+        --html-extension \
+        --convert-links \
+        --no-parent \
+        --warc-file="$domain" \
+        --warc-cdx \
+        "$url"
+}
+
 # A function for conveniently adding remotes for GitHub forks.
 add-github-remote() {
     local new_remote="$1"
