@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Route Ctrl+n based on the active window.
+#
+# * For terminals: Does nothing.
+# * For browser windows: Sends Ctrl+Shift+o directly to the window.
+# * For GVim: Sends Ctrl+n through GVim client-server handling.
+# * For Bitwig: Does nothing.
+# * Everything else: Launches a new application instance.
+#
+# On X11 `xdotool` is used.
+# On Wayland `kdotool` and `ydotool` are used.
+
+if [[ "${XDG_SESSION_TYPE:-}" == wayland ]]; then
+    is_wayland=1
+else
+    is_wayland=0
+fi
+
+if [ -f /usr/local/bin/gvim ]; then
+    gvim='/usr/local/bin/gvim'
+else
+    gvim='/usr/bin/gvim'
+fi
+
+launch_application_id() {
+    local application_id="${1%.desktop}"
+
+    if [[ -z "${application_id}" ]]; then
+        echo 'Error: Empty application ID.' 1>&2
+        exit 1
+    fi
+
+    if command -v kstart6 >/dev/null 2>&1; then
+        exec kstart6 --application "${application_id}"
+    fi
+
+    if command -v kstart >/dev/null 2>&1; then
+        exec kstart --application "${application_id}"
+    fi
+
+    if command -v gtk-launch >/dev/null 2>&1; then
+        exec gtk-launch "${application_id}"
+    fi
+
+    echo 'Error: kstart6, kstart, or gtk-launch is required but was not found.' 1>&2
+    exit 1
+}
+
+get_application_id() {
+    local application_id=''
+    local desktop_property=''
+    local window_class=''
+
+    if (( is_wayland )); then
+        if ! command -v kdotool >/dev/null 2>&1; then
+            echo 'Error: kdotool is required but was not found.' 1>&2
+            return 1
+        fi
+
+        application_id="$(kdotool getactivewindow getwindowclassname)"
+    else
+        if desktop_property="$(xprop -id "${window}" _KDE_NET_WM_DESKTOP_FILE)"; then
+            if [[ "${desktop_property}" =~ \"([^\"]+)\" ]]; then
+                application_id="${BASH_REMATCH[1]}"
+            fi
+        fi
+
+        if [[ -z "${application_id}" ]]; then
+            window_class="$(xprop -id "${window}" WM_CLASS)"
+
+            if [[ "${window_class}" =~ \"([^\"]+)\" ]]; then
+                application_id="${BASH_REMATCH[1]}"
+            fi
+        fi
+    fi
+
+    if [[ -z "${application_id}" ]]; then
+        echo 'Error: Could not determine active application ID.' 1>&2
+        return 1
+    fi
+
+    echo "${application_id,,}"
+}
+
+window=''
+
+if (( ! is_wayland )); then
+    if ! command -v xdotool >/dev/null 2>&1; then
+        echo 'Error: xdotool is required but was not found.' 1>&2
+        exit 1
+    fi
+
+    if ! command -v xprop >/dev/null 2>&1; then
+        echo 'Error: xprop is required but was not found.' 1>&2
+        exit 1
+    fi
+
+    window="$(xdotool getactivewindow)"
+fi
+
+# Get the application ID.
+if ! application_id="$(get_application_id)"; then
+    exit 1
+fi
+
+# Do nothing for terminals.
+# We cannot handle Ctrl+n there properly.
+if [[ "${application_id}" =~ (konsole|ghostty|xterm|uxterm|alacritty|kitty|wezterm|foot|tilix|gnome-terminal|org[.]gnome[.]terminal|xfce4-terminal|mate-terminal|qterminal|yakuake) ]]; then
+    exit 0
+fi
+
+# For Chromium browsers send Ctrl+Shift+o so ChatGPT opens a new chat.
+if [[ "${application_id}" =~ (chrome|chromium|brave-browser|brave[.]browser|microsoft-edge|vivaldi|opera|thorium) ]]; then
+    if (( is_wayland )); then
+        if ! command -v ydotool >/dev/null 2>&1; then
+            echo 'Error: ydotool is required but was not found.' 1>&2
+            exit 1
+        fi
+
+        # Ctrl+Shift+o
+        exec ydotool key 29:1 42:1 24:1 24:0 42:0 29:0
+    fi
+
+    exec xdotool key --clearmodifiers --window "${window}" 'Ctrl+Shift+o'
+fi
+
+# Send Ctrl+n specially to GVim for GVim keybind handling.
+if [[ "${application_id}" =~ gvim ]]; then
+    exec "${gvim}" --servername "$("${gvim}" --serverlist | head -n 1)" --remote-expr 'mode() =~# "^[iR]" ? feedkeys("\<C-n>", "mt!") : feedkeys("\<C-n>", "mx")'
+fi
+
+# Do nothing for Bitwig.
+if [[ "${application_id}" =~ bitwig ]]; then
+    exit 0
+fi
+
+# By default launch a new application instance on Ctrl+n for other applications.
+launch_application_id "${application_id}"
