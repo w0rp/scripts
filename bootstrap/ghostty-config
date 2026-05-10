@@ -1,0 +1,49 @@
+# Reset some Ghostty keybinds so they do nothing.
+keybind = ctrl+shift+p=unbind
+keybind = ctrl+,=unbind
+keybind = ctrl+shift+,=unbind
+
+# Copy highlighted text with Ctrl+C and Super+C.
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = performable:super+c=copy_to_clipboard
+
+# Send Super+. and Ctrl+. as keyboard interrupt.
+keybind = super+.=text:\x03
+keybind = ctrl+.=text:\x03
+
+# Paste with Ctrl+v or Super+V
+keybind = ctrl+v=paste_from_clipboard
+keybind = super+v=paste_from_clipboard
+
+# Paste with Ctrl+Shift+v or Super+Shift+v
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = super+shift+v=paste_from_clipboard
+
+# Pass through Ctrl+shift+r so Bash will do reverse direction reverse-i search
+keybind = ctrl+shift+r=text:\x12
+# Pass through Ctrl+shift+tab unaltered so Bash can bind it for completion.
+keybind = ctrl+shift+tab=unbind
+
+# Use Inconsolata as the font
+font-family = Inconsolata
+font-size = 20
+
+# Theme settings: Dark backgrounds and bright foregrounds.
+background = 000000
+theme = Dracula
+foreground = ffffff
+background-opacity = 1.0
+cursor-color = e6e6e6
+selection-background = 333333
+selection-foreground = f0f0f0
+
+gtk-titlebar = true
+
+# Use a solid cursor block with no blinking.
+# shell integration needs turning off in order to fix the cursor.
+shell-integration-features = no-cursor
+cursor-style = block
+cursor-style-blink = false
+
+# Disable bell features.
+bell-features = no-system,no-audio,no-attention,no-title,no-border
