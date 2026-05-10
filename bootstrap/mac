@@ -149,3 +149,18 @@ if ! [ -d ~/.config/opencode ]; then
     mkdir -p ~/.config
     git clone git@github.com:w0rp/opencode-config.git ~/.config/opencode
 fi
+
+# Install build dependencies for Zeal, including Qt
+brew install qt@6
+brew install libarchive
+brew install vulkan-headers
+brew install cmake
+
+# Install Zeal by building it for Mac
+(
+    CMAKE_PREFIX_PATH="$(brew --prefix qt@6):$(brew --prefix libarchive):$(brew --prefix vulkan-headers)"
+    export CMAKE_PREFIX_PATH
+
+    cd ~/git
+    git clone https://github.com/zealdocs/zeal.git
+)
