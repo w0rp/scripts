@@ -2,6 +2,7 @@
 
 # Load completion functions for Bash, where available.
 if [ -f /etc/bash_completion ]; then
+    # shellcheck disable=SC1091
     source /etc/bash_completion
 fi
 
@@ -44,3 +45,6 @@ bind 'TAB:menu-complete'
 bind '"\e[Z":menu-complete-backward'
 # Bind Ctrl+Shift+Tab for Konsole too.
 bind '"\e[27;6;9~":menu-complete-backward'
+# Bind Ctrl+s to forward search history.
+# This is used in Ghostty with a keybind for Command+Shift+r
+bind '"\C-s": forward-search-history'

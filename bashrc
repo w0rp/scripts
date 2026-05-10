@@ -24,9 +24,17 @@ case "$TERM" in
 esac
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    if [[ "$OSTYPE" =~ ^darwin ]]; then
+        PS1='\[\033[01;32m\]mac\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    else
+        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    fi
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    if [[ "$OSTYPE" =~ ^darwin ]]; then
+        PS1='\[\033[01;32m\]mac\[\033[00m\]:\w\$ '
+    else
+        PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    fi
 fi
 unset color_prompt
 
@@ -60,6 +68,12 @@ else
 
         eval "$(pyenv init - bash)"
     fi
+fi
+
+# Disable Ctrl+S and Ctrl+Q behaviour on Macs so we can keybind those keys.
+# This will stop suspend and resume commands for the terminal.
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+    stty -ixon
 fi
 
 # Set up Go, if available

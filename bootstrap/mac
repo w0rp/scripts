@@ -126,10 +126,20 @@ npm install -g @mermaid-js/mermaid-cli
 # Add a tool for linting git commits
 pip install gitlint
 
-# Make iTerm2 the default command script application
-# This makes Linear launch Claude Code CLI in iTerm2 instead of Terminal.app
+# Install Ghostty as the Terminal
+brew install --cask ghostty
+
+# Install the config that came with this script repo.
+mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
+cp ~/script/bootstrap/ghostty-config ~/Library/Application\ Support/com.mitchellh.ghostty/config
+
+# Disable "last login" messages
+touch ~/.hushlogin
+
+# Make Ghostty the default command script application
+# This makes Linear launch Claude Code CLI in Ghostty instead of Terminal.app
 brew install duti
-duti -s com.googlecode.iterm2 .command all
+duti -s com.mitchellh.ghostty .command all
 
 # Configure Claude Code
 brew install --cask claude-code
