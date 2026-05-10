@@ -132,6 +132,8 @@ brew install duti
 duti -s com.googlecode.iterm2 .command all
 
 # Configure Claude Code
+brew install --cask claude-code
+
 if ! [ -d ~/.claude ]; then
     echo 'Cloning claude-code-config into ~/.claude ...'
     echo
