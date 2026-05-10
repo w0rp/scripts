@@ -139,3 +139,13 @@ if ! [ -d ~/.claude ]; then
     echo
     git clone git@github.com:w0rp/claude-code-config.git ~/.claude
 fi
+
+# Configure OpenCode
+brew install anomalyco/tap/opencode
+
+if ! [ -d ~/.config/opencode ]; then
+    echo 'Cloning opencode-config into ~/.config/opencode ...'
+    echo
+    mkdir -p ~/.config
+    git clone git@github.com:w0rp/opencode-config.git ~/.config/opencode
+fi
