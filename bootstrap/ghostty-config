@@ -38,6 +38,11 @@ keybind = ctrl+shift+tab=unbind
 # Make Command+Shift+t open new tabs.
 keybind = super+shift+t=new_tab
 
+# Make Command+b send Ctrl+b for pagination in diffs, etc.
+keybind = super+b=text:\x02
+# Make Command+d send Ctrl+d for pagination in diffs, etc.
+keybind = super+d=text:\x04
+
 # Use Inconsolata as the font
 font-family = Inconsolata
 font-size = 20
