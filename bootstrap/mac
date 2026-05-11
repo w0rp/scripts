@@ -174,3 +174,7 @@ brew install cmake
     cd ~/git
     git clone https://github.com/zealdocs/zeal.git
 )
+
+echo 'Mac installation complete!'
+echo
+echo 'Now run: chsh -s /opt/homebrew/bin/bash'

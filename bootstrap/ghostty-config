@@ -1,5 +1,5 @@
-# Use Homebrew Bash on Mac, zsh as a fallback on Mac, or otherwise Bash.
-command = /bin/sh -c '[ "$(uname -s)" = Darwin ] && { [ -x /opt/homebrew/bin/bash ] && exec /opt/homebrew/bin/bash; exec /bin/zsh; }; exec /bin/bash'
+# New tabs should open in the previous working directory.
+window-inherit-working-directory = true
 
 # Reset some Ghostty keybinds so they do nothing.
 keybind = ctrl+shift+p=unbind
