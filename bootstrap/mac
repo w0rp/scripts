@@ -175,6 +175,57 @@ brew install cmake
     git clone https://github.com/zealdocs/zeal.git
 )
 
+# Configure git delta to open file links with GVim through a handler.
+configure_delta_gvim_links() {
+    local app_dir="$HOME/Applications/GVimURLHandler.app"
+    local script_dir="$HOME/.local/bin/"
+    local handler_file="${script_dir}gvim-url-handler"
+
+    mkdir -p "$script_dir"
+
+    cat > "$handler_file" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+python3 - "$1" <<'PY' | "$HOME/script/unix/gvim"
+import sys
+import urllib.parse
+
+url = urllib.parse.urlparse(sys.argv[1])
+query = urllib.parse.parse_qs(url.query)
+
+file_path = query.get('file', [''])[0]
+line_number = query.get('line', [''])[0]
+
+if file_path:
+    if line_number:
+        print(f'{file_path}::{line_number}')
+    else:
+        print(file_path)
+PY
+EOF
+
+    chmod +x "$handler_file"
+
+    osacompile -o "$app_dir" <<EOF
+on open location this_url
+    do shell script quoted form of "$handler_file" & " " & quoted form of this_url
+end open location
+EOF
+
+    /usr/libexec/PlistBuddy -c 'Add :CFBundleURLTypes array' "$app_dir/Contents/Info.plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c 'Add :CFBundleURLTypes:0 dict' "$app_dir/Contents/Info.plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c 'Add :CFBundleURLTypes:0:CFBundleURLName string GVimURLHandler' "$app_dir/Contents/Info.plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c 'Add :CFBundleURLTypes:0:CFBundleURLSchemes array' "$app_dir/Contents/Info.plist" 2>/dev/null || true
+    /usr/libexec/PlistBuddy -c 'Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string gvim' "$app_dir/Contents/Info.plist" 2>/dev/null || true
+
+    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app_dir"
+
+    git config --global delta.hyperlinks true
+    git config --global delta.hyperlinks-file-link-format 'gvim://open?file={path}&line={line}'
+}
+configure_delta_gvim_links
+
 echo 'Mac installation complete!'
 echo
 echo 'Now run: chsh -s /opt/homebrew/bin/bash'
