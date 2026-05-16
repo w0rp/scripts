@@ -500,6 +500,43 @@ alias biome='wrap-js-executable biome'
 alias eslint='wrap-js-executable eslint'
 alias tsc='wrap-js-executable tsc'
 
+# Run Codex from the Docker sandbox
+codex() {
+    local repository_root
+    local watcher_pid
+    local codex_status
+
+    repository_root="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+    if [[ -z "$repository_root" ]]; then
+        repository_root="$PWD"
+    fi
+
+    watcher_pid=0
+
+    # On KDE play a complete sound when Codex stops.
+    if command -v paplay &>/dev/null && command -v inotifywait &>/dev/null && [ -e /usr/share/sounds/freedesktop/stereo/complete.oga ]; then
+        (
+            # NOTE: stop-trigger contains the stop even JSON payload.
+            while inotifywait -q -e close_write "${repository_root}/.codex/stop-trigger" >/dev/null; do
+                paplay --volume=60000 /usr/share/sounds/freedesktop/stereo/complete.oga
+            done
+        ) &
+        watcher_pid="$!"
+    fi
+
+    sbx run codex -- "$@"
+    codex_status="$?"
+
+    if (( watcher_pid )) && kill -0 "$watcher_pid" 2>/dev/null; then
+        kill "$watcher_pid" 2>/dev/null
+    fi
+
+    wait "$watcher_pid" 2>/dev/null
+
+    return "$codex_status"
+}
+
 # A function to serve an HTML file to localhost via a relatively random port
 # Written with ChatGPT vibe coding.
 serve-html() {
