@@ -470,6 +470,7 @@ alias isort='wrap-python-executable isort'
 alias pre-commit='wrap-python-executable pre-commit'
 alias mypy='wrap-python-executable mypy'
 alias pyright='wrap-python-executable pyright'
+alias ty='wrap-python-executable ty'
 
 # Django wrappers
 alias runserver='wrap-python-executable python manage.py runserver'
