@@ -257,23 +257,21 @@ gx-tree() {
     local wt_branch
 
     root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
-        printf 'not inside a git working tree\n' >&2
+        echo 'not inside a git working tree' 1>&2
         return 1
     }
 
     common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || {
-        printf 'could not resolve common git dir\n' >&2
+        echo 'could not resolve common git dir' 1>&2
         return 1
     }
 
     main_root="$(dirname "$common_dir")"
     current_root="$root"
 
-    cd "$main_root" || return 1
-
     if [ "$current_root" = "$main_root" ]; then
         if [ -z "${1:-}" ]; then
-            printf 'you are in the main tree; pass a branch name or worktree path\n' >&2
+            echo 'you are in the main tree; pass a branch name or worktree path' 1>&2
             return 1
         fi
 
@@ -293,11 +291,11 @@ gx-tree() {
                     fi
                     ;;
             esac
-        done < <(git worktree list --porcelain)
+        done < <(git -C "$main_root" worktree list --porcelain)
 
         if [ -n "$worktree_path" ]; then
             if [ "$worktree_path" = "$main_root" ]; then
-                printf 'branch %s is already checked out in the main tree\n' "$branch_name" >&2
+                printf 'branch %s is already checked out in the main tree\n' "$branch_name" 1>&2
                 return 1
             fi
 
@@ -307,38 +305,42 @@ gx-tree() {
             if [ -n "$(git -C "$worktree_path" status --porcelain=v1 -uall)" ]; then
                 stash_msg="gx-tree-collapse:$branch_name:$(date +%s)"
 
-                git -C "$worktree_path" stash push --include-untracked -m "$stash_msg" >/dev/null || {
-                    printf 'failed to stash changes from %s\n' "$worktree_path" >&2
+                if ! git -C "$worktree_path" stash push --include-untracked -m "$stash_msg" >/dev/null; then
+                    printf 'failed to stash changes from %s\n' "$worktree_path" 1>&2
                     return 1
-                }
+                fi
 
-                stash_ref="$(git stash list | awk -v msg="$stash_msg" 'index($0, msg) { sub(/:.*/, "", $1); print $1; exit }')"
+                stash_ref="$(
+                    git -C "$main_root" stash list |
+                        awk -v msg="$stash_msg" 'index($0, msg) { sub(/:.*/, "", $1); print $1; exit }'
+                )"
 
                 if [ -z "$stash_ref" ]; then
-                    printf 'stash was expected but not found for %s\n' "$branch_name" >&2
+                    printf 'stash was expected but not found for %s\n' "$branch_name" 1>&2
                     return 1
                 fi
 
                 did_stash=1
             fi
 
-            git worktree remove "$worktree_path" || {
-                printf 'failed to remove worktree %s\n' "$worktree_path" >&2
+            if ! git -C "$main_root" worktree remove "$worktree_path"; then
+                printf 'failed to remove worktree %s\n' "$worktree_path" 1>&2
                 return 1
-            }
-
-            git checkout "$branch_name" || {
-                printf 'failed to check out branch %s in the main tree\n' "$branch_name" >&2
-                return 1
-            }
-
-            if [ "$did_stash" -eq 1 ]; then
-                git stash pop --index "$stash_ref" || {
-                    printf 'branch checked out, but stash pop had conflicts\n' >&2
-                    return 1
-                }
             fi
 
+            if ! git -C "$main_root" checkout "$branch_name"; then
+                printf 'failed to check out branch %s in the main tree\n' "$branch_name" 1>&2
+                return 1
+            fi
+
+            if [ "$did_stash" -eq 1 ]; then
+                if ! git -C "$main_root" stash pop --index "$stash_ref"; then
+                    echo 'branch checked out, but stash pop had conflicts' 1>&2
+                    return 1
+                fi
+            fi
+
+            cd "$main_root" || return 1
             return 0
         fi
 
@@ -346,18 +348,22 @@ gx-tree() {
 
         case "$remove_dir" in
             /*) ;;
-            *) remove_dir="$PWD/$remove_dir" ;;
+            *) remove_dir="$main_root/$remove_dir" ;;
         esac
     else
         remove_dir="$current_root"
     fi
 
     if [ "$remove_dir" = "$main_root" ]; then
-        printf 'refusing to remove the main tree\n' >&2
+        echo 'refusing to remove the main tree' 1>&2
         return 1
     fi
 
-    git worktree remove "$remove_dir" || return 1
+    if ! git -C "$main_root" worktree remove "$remove_dir"; then
+        return 1
+    fi
+
+    cd "$main_root" || return 1
 }
 
 # A function for killing processes with confirmation.
