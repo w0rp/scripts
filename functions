@@ -191,11 +191,10 @@ add-github-remote() {
     git remote add "$new_remote" "git@github.com:${new_remote}/${basename}"
 }
 
-# gt - Create a git worktree with a given branch name (new branch)
+# gt - Create a git worktree with a given branch name, or check out an existing branch
 gt() {
     local branch
     local root
-    local prefix
     local worktrees_dir
     local target_dir
     local upstream
@@ -203,40 +202,46 @@ gt() {
     branch="${1:-}"
 
     if [ -z "$branch" ]; then
-        printf "usage: git_wt_new <new-branch-name>\n" >&2
+        echo 'usage: gt <branch-name>' 1>&2
         return 1
     fi
 
     root="$(git rev-parse --show-toplevel 2>/dev/null)" || {
-        printf "not inside a git working tree\n" >&2
+        echo 'not inside a git working tree' 1>&2
         return 1
     }
 
     # Use upstream first, origin second for the upstream.
-    if git config --get remote.upstream.url > /dev/null; then
+    if git config --get remote.upstream.url >/dev/null; then
         upstream='upstream'
     else
         upstream='origin'
     fi
 
-    prefix="$(basename "$root")"
     worktrees_dir="$HOME/git/worktrees/"
-    target_dir="${worktrees_dir}${prefix}-${branch}"
+    target_dir="${worktrees_dir}$(basename "$root")-${branch}"
 
     mkdir -p "$worktrees_dir" || return 1
 
-    if git show-ref --verify --quiet "refs/heads/$branch" \
-        || git show-ref --verify --quiet "refs/remotes/$upstream/$branch"; then
-        printf "branch already exists: %s\n" "$branch" >&2
-        return 1
-    fi
-
     if [ -e "$target_dir" ]; then
-        printf "target already exists: %s\n" "$target_dir" >&2
+        printf 'target already exists: %s\n' "$target_dir" 1>&2
         return 1
     fi
 
-    git worktree add -b "$branch" "$target_dir" HEAD || return 1
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        if ! git worktree add "$target_dir" "$branch"; then
+            return 1
+        fi
+    elif git show-ref --verify --quiet "refs/remotes/$upstream/$branch"; then
+        if ! git worktree add -b "$branch" "$target_dir" "$upstream/$branch"; then
+            return 1
+        fi
+    else
+        if ! git worktree add -b "$branch" "$target_dir" HEAD; then
+            return 1
+        fi
+    fi
+
     cd "$target_dir" || return 1
 }
 
@@ -476,7 +481,6 @@ alias isort='wrap-python-executable isort'
 alias pre-commit='wrap-python-executable pre-commit'
 alias mypy='wrap-python-executable mypy'
 alias pyright='wrap-python-executable pyright'
-alias ty='wrap-python-executable ty'
 
 # Django wrappers
 alias runserver='wrap-python-executable python manage.py runserver'
@@ -506,43 +510,6 @@ wrap-js-executable() {
 alias biome='wrap-js-executable biome'
 alias eslint='wrap-js-executable eslint'
 alias tsc='wrap-js-executable tsc'
-
-# Run Codex from the Docker sandbox
-codex() {
-    local repository_root
-    local watcher_pid
-    local codex_status
-
-    repository_root="$(git rev-parse --show-toplevel 2>/dev/null)"
-
-    if [[ -z "$repository_root" ]]; then
-        repository_root="$PWD"
-    fi
-
-    watcher_pid=0
-
-    # On KDE play a complete sound when Codex stops.
-    if command -v paplay &>/dev/null && command -v inotifywait &>/dev/null && [ -e /usr/share/sounds/freedesktop/stereo/complete.oga ]; then
-        (
-            # NOTE: stop-trigger contains the stop even JSON payload.
-            while inotifywait -q -e close_write "${repository_root}/.codex/stop-trigger" >/dev/null; do
-                paplay --volume=60000 /usr/share/sounds/freedesktop/stereo/complete.oga
-            done
-        ) &
-        watcher_pid="$!"
-    fi
-
-    sbx run codex -- "$@"
-    codex_status="$?"
-
-    if (( watcher_pid )) && kill -0 "$watcher_pid" 2>/dev/null; then
-        kill "$watcher_pid" 2>/dev/null
-    fi
-
-    wait "$watcher_pid" 2>/dev/null
-
-    return "$codex_status"
-}
 
 # A function to serve an HTML file to localhost via a relatively random port
 # Written with ChatGPT vibe coding.
