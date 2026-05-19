@@ -13,7 +13,7 @@ git config --global push.default current
 # Make `git pull` use --rebase by default.
 git config --global pull.rebase true
 
-# Make `git merge` use --no-ff by default
+# Make `git merge` use --no-ff by default.
 git config --global --add merge.ff false
 
 # Default `git merge` by itself to merging upstream to the branch.
@@ -22,29 +22,32 @@ git config --global merge.defaultToUpstream true
 # Make git use "patience diff" by default for everything.
 git config --global diff.algorithm patience
 
+# Include more context in diffs so delta can syntax highlight Python docstrings properly.
+git config --global diff.context 12
+
 # Make git use Vim for commit messages, etc.
 git config --global core.editor vim
 
 # Disable `git gui` warnings for loose objects.
 git config --global gui.gcwarning false
 
-# Re-apply previous merge conflict fixes
+# Re-apply previous merge conflict fixes.
 git config --global rerere.enabled true
 
-# Set the comment character to ';' to we can write '#' inline for issues
+# Set the comment character to ';' so we can write '#' inline for issues.
 git config --global core.commentchar ";"
 
-# Enable colours for Git
+# Enable colours for Git.
 git config --global color.ui true
 
-# Install a tool for interactively selecting a branch
+# Install a tool for interactively selecting a branch.
 npm install --global git-branch-select
 
-# Install git-delta for better diffs
-if ! command -v delta &> /dev/null; then
+# Install git-delta for better diffs.
+if ! command -v delta >/dev/null 2>&1; then
     if [[ "$OSTYPE" =~ ^darwin ]]; then
         brew install git-delta
-    elif command -v apt &> /dev/null; then
+    elif command -v apt >/dev/null 2>&1; then
         echo 'Asking to install git-delta via apt'
         sudo apt install git-delta
     else
@@ -53,24 +56,36 @@ if ! command -v delta &> /dev/null; then
     fi
 fi
 
-# Use delta for diffs
+# Use delta for diffs.
 git config --global core.pager delta
 git config --global interactive.diffFilter 'delta --color-only'
+
 # Enable key navigation for delta.
 git config --global delta.navigate true
+
 # Disable side-by-side diffs for delta.
 git config --global delta.side-by-side false
-# Use the Dracula theme for Delta.
-git config --global delta.syntax-theme Dracula
+
+# Use a clearer syntax theme for delta.
+git config --global delta.syntax-theme 'Monokai Extended'
+
 # Include line numbers in delta output.
-git config --global delta.line-numbers false
+git config --global delta.line-numbers true
+
+# Hide the left-side line number styling.
+git config --global delta.line-numbers-left-style hidden
+
 # Include hyperlinks so you can click on files and commits to open them.
 git config --global delta.hyperlinks true
+git config --global delta.hyperlinks-file-link-format 'gvim://open?file={path}&line={line}'
+
 # Disable "hunk headers" for class/method names in diffs.
 git config --global delta.hunk-header-style omit
+
 # Get rid of Unicode characters for character wrapping.
 git config --global delta.wrap-left-symbol ' '
 git config --global delta.wrap-right-symbol ' '
+
 # Use ASCII characters for file modification markers.
 git config --global delta.file-added-label '+'
 git config --global delta.file-removed-label '-'
