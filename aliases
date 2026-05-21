@@ -19,7 +19,8 @@ fi
 alias gl='git log --first-parent'
 alias gd_=$'git diff -M -D'
 alias gd='gd_ --cached'
-alias ga='git add -A'
+# Alias `git add`, and modify it to always ignore pack directories for vim.
+alias ga="git add -A ':!pack' ':!pack/**'"
 alias gbs='git branch-select'
 # Make ag do nothing at all, to prevent running silversearcher
 alias ag='true'
