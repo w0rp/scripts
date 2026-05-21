@@ -88,6 +88,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ### JS/TS setup ###
 # NOTE: Review what has been installed with: npm list -g --depth=0
 
+# Disable npm installation scripts
+npm config set ignore-scripts true --location=user
+
 ### Python setup ###
 
 # Add poetry for installing Python packages
