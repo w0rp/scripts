@@ -487,6 +487,18 @@ alias runserver='wrap-python-executable python manage.py runserver'
 alias shell='wrap-python-executable python manage.py shell_plus'
 alias dbshell='wrap-python-executable python manage.py dbshell'
 
+# A wrapper for `yarn` that forces git hooks to be disabled.
+# This prevents tools like Husky from installing git hooks.
+yarn() {
+    command yarn "$@"
+
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+        git_empty_hooks_path="${XDG_CONFIG_HOME:-$HOME/.config}/git/empty-hooks"
+        mkdir -p "$git_empty_hooks_path"
+        git config --local core.hooksPath "$git_empty_hooks_path"
+    fi
+}
+
 # A wrapper for JS programs that automatically use node_modules versions.
 wrap-js-executable() {
     local basename="$1"
