@@ -22,6 +22,9 @@ keybind = super+r=text:\x12
 # Bind Command+Shift+r to Ctrl+s for reverse-i search in the other direction
 keybind = super+shift+r=text:\x13
 
+# Bind Command+w to Ctrl+w
+keybind = super+w=text:\x17
+
 # Paste with Ctrl+v or Super+V
 keybind = ctrl+v=paste_from_clipboard
 keybind = super+v=paste_from_clipboard
