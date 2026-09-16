@@ -551,14 +551,21 @@ codex() {
         watcher_pid="$!"
     fi
 
-    sbx run codex -- "$@"
-    codex_status="$?"
-
-    if (( watcher_pid )) && kill -0 "$watcher_pid" 2>/dev/null; then
-        kill "$watcher_pid" 2>/dev/null
+    if sbx run codex -- "$@"; then
+        codex_status=0
+    else
+        codex_status="$?"
     fi
 
-    wait "$watcher_pid" 2>/dev/null
+    if (( watcher_pid )); then
+        pkill -TERM -P "$watcher_pid" 2>/dev/null
+
+        if kill -0 "$watcher_pid" 2>/dev/null; then
+            kill "$watcher_pid" 2>/dev/null
+        fi
+
+        wait "$watcher_pid" 2>/dev/null
+    fi
 
     return "$codex_status"
 }
