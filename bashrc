@@ -95,7 +95,7 @@ if [ -d ~/.cargo ]; then
 fi
 
 # Set up nvm, if available.
-if command -v nvm /dev/null; then
+if command -v nvm &> /dev/null; then
     export NVM_DIR="$HOME/.nvm"
     # shellcheck disable=SC1091
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
