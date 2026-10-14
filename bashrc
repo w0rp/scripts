@@ -70,6 +70,12 @@ else
     fi
 fi
 
+# Tell Windows Terminal the current directory (OSC 9;9) so duplicated tabs/panes open here
+if [[ -n "$WSL_DISTRO_NAME" && -n "$WT_SESSION" ]]; then
+    __wt_osc9_9() { printf '\e]9;9;%s\e\\' "$(wslpath -w "$PWD")"; }
+    PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }__wt_osc9_9"
+fi
+
 # Disable Ctrl+S and Ctrl+Q behaviour on Macs so we can keybind those keys.
 # This will stop suspend and resume commands for the terminal.
 if [[ "$OSTYPE" =~ ^darwin ]]; then
