@@ -63,7 +63,7 @@ gtk-titlebar = true
 
 # Use a solid cursor block with no blinking.
 # shell integration needs turning off in order to fix the cursor.
-shell-integration-features = no-cursor
+shell-integration-features = no-cursor,ssh-env,ssh-terminfo
 cursor-style = block
 cursor-style-blink = false
 
